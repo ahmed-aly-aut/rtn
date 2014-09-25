@@ -1,0 +1,15 @@
+Timetable:
+
+	1 Hours 20.09.2014 -> SMNP comandline tool, tests
+	2 Hours 22.09.2014 -> desgin, concept
+	2 Hours 23.09.2014 -> desgin improved
+	2 Hours 24.09.2014 -> MIB browser, OID executed
+
+	Estimated Time:
+
+		uml-desgin 3h
+		smnp implementation 4h
+		telnet implementation 3h
+		ssh implementation 3h
+		test implementation 4h
+		documentation 3h
