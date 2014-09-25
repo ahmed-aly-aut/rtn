@@ -1,0 +1,10 @@
+
+As a user, I want to connect me to the router.
+
+As a user, I want to get infromation from the router.
+
+As a user, I want to get the firewall-infromation from the router.
+
+As a user, I want to be notified if the firewall-config changes.
+
+As a user, I want to configure the router-firewall.
