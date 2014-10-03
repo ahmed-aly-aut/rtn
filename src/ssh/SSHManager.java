@@ -7,8 +7,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SSHManager {
-	private static final Logger LOGGER = Logger.getLogger(SSHManager.class
-			.getName());
+	
+	private static final Logger LOGGER = Logger.getLogger(SSHManager.class.getName());
+	
 	private JSch jschSSHChannel;
 	private String strUserName;
 	private String strConnectionIP;
@@ -17,12 +18,11 @@ public class SSHManager {
 	private Session sesConnection;
 	private int intTimeOut;
 
-	private void doCommonConstructorActions(String userName, String password,
-			String connectionIP, String knownHostsFileName) {
+	private void doCommonConstructorActions(String userName, String password, String connectionIP, String knownHostsFileName) {
 		jschSSHChannel = new JSch();
 
 		try {
-			jschSSHChannel.setKnownHosts(knownHostsFileName);
+			jschSSHChannel.setKnownHosts(knownHostsFileName); //TODO change this
 		} catch (JSchException jschX) {
 			logError(jschX.getMessage());
 		}
@@ -32,10 +32,8 @@ public class SSHManager {
 		strConnectionIP = connectionIP;
 	}
 
-	public SSHManager(String userName, String password, String connectionIP,
-			String knownHostsFileName) {
-		doCommonConstructorActions(userName, password, connectionIP,
-				knownHostsFileName);
+	public SSHManager(String userName, String password, String connectionIP, String knownHostsFileName) {
+		doCommonConstructorActions(userName, password, connectionIP, knownHostsFileName);
 		intConnectionPort = 22;
 		intTimeOut = 60000;
 	}
@@ -48,11 +46,8 @@ public class SSHManager {
 		intTimeOut = 60000;
 	}
 
-	public SSHManager(String userName, String password, String connectionIP,
-			String knownHostsFileName, int connectionPort,
-			int timeOutMilliseconds) {
-		doCommonConstructorActions(userName, password, connectionIP,
-				knownHostsFileName);
+	public SSHManager(String userName, String password, String connectionIP, String knownHostsFileName, int connectionPort, int timeOutMilliseconds) {
+		doCommonConstructorActions(userName, password, connectionIP, knownHostsFileName);
 		intConnectionPort = connectionPort;
 		intTimeOut = timeOutMilliseconds;
 	}
@@ -61,8 +56,7 @@ public class SSHManager {
 		String errorMessage = null;
 
 		try {
-			sesConnection = jschSSHChannel.getSession(strUserName,
-					strConnectionIP, intConnectionPort);
+			sesConnection = jschSSHChannel.getSession(strUserName, strConnectionIP, intConnectionPort);
 			sesConnection.setPassword(strPassword);
 			// UNCOMMENT THIS FOR TESTING PURPOSES, BUT DO NOT USE IN PRODUCTION
 			// sesConnection.setConfig("StrictHostKeyChecking", "no");
