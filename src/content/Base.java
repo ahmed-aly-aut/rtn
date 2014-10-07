@@ -64,16 +64,16 @@ public class Base {
 	/**
 	 * A method to get the value from the specific key.
 	 * @param the key
-	 * @return the value as String
+	 * @return the value as String, is the value null the key was not found
 	 */
-	public String getSettingString(String key) {
+	public String getSettingString(String key) { 
 		return settings.getProperty(key);
 	}
 	
 	/**
 	 * A method to get the value from the specific key
 	 * @param the key
-	 * @return the lang-value for the specific key
+	 * @return the lang-value for the specific key, is the lang-value null the key was not found
 	 */
 	public String getLangString(String key) {
 		return lang.getProperty(key);
