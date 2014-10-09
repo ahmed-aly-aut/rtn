@@ -1,15 +1,219 @@
-package root.snmp;
+package snmp;
 
+import snmp.exceptions.OIDDoesntExistsException;
+import snmp.exceptions.PDURequestFailedException;
+import snmp.exceptions.SNMPTimeOutException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.snmp4j.*;
+import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 
-import root.exceptions.WrongTransportProtocol;
+import snmp.exceptions.WrongTransportProtocol;
+import org.snmp4j.smi.*;
+import org.snmp4j.transport.DefaultTcpTransportMapping;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.DefaultPDUFactory;
+import org.snmp4j.util.TreeEvent;
+import org.snmp4j.util.TreeUtils;
 
-public class SnmpV2c extends SnmpManager {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
-	public SnmpV2c(String transportProtocol, String ipAddress, int port,
+public class SnmpV2c implements SnmpManager {
+    private Address address;
+    private Snmp snmp;
+    private TransportMapping<? extends Address> transport;
+    private Authentication authentication;
+
+    public SnmpV2c(String transportProtocol, String ipAddress, int port,
                    String commmunity, int retries, int timeout) throws WrongTransportProtocol {
-		super(transportProtocol, ipAddress, port, commmunity,
-				SnmpConstants.version2c, retries, timeout);
-	}
+        address = GenericAddress.parse(transportProtocol + ":" + ipAddress
+                + "/" + port);
+        authentication = new CommunityAuthentication(address, commmunity, SnmpConstants.version2c, retries, timeout);
+        try {
+            if (transportProtocol.equalsIgnoreCase("UDP")) {
+                transport = new DefaultUdpTransportMapping();
+            } else if (transportProtocol.equalsIgnoreCase("TCP")) {
+                transport = new DefaultTcpTransportMapping();
+            } else {
+                throw new WrongTransportProtocol();
+            }
+        } catch (IOException e) {
+            System.err.println("ERROR: Socket binding failed!");
+            e.printStackTrace();
+        }
+        snmp = new Snmp(transport);
+    }
+
+    /**
+     * The method getAsString(Oid oid) is using the @see SnmpManager#get to get a String value of the specified OID.
+     *
+     * @param oid the requested OID
+     * @return a String with the result from the specified OID
+     * @throws SNMPTimeOutException      will be thrown if a timeout with request happens
+     * @throws OIDDoesntExistsException  will be thrown if the specified OID does not exist
+     * @throws PDURequestFailedException will be thrown if an error occurs within the request
+     */
+    public String getAsString(OID oid) throws SNMPTimeOutException,
+            OIDDoesntExistsException, PDURequestFailedException {
+        // extract the response PDU (could be null if timed out)
+        VariableBinding ret = (VariableBinding) get(new OID[]{oid}).get(0);
+        String response = ret.getVariable().toString();
+        if (response.equals("noSuchObject"))
+            throw new OIDDoesntExistsException();
+        return response;
+    }
+
+    /**
+     * The method get can be specified with an Array of requested OIDs. A Vector with elements of the subclass VariableBinding will be returned.
+     * OID requested from the method GET can only return a value. Therefore the OIDd must be a scalar and not a branch.
+     *
+     * @param oids the requested OIDs
+     * @return A Vector with VariableBindings
+     * @throws SNMPTimeOutException      will be thrown if a timeout with request happens
+     * @throws PDURequestFailedException will be thrown if an error occurs within the request
+     * @see org.snmp4j.smi.VariableBinding
+     */
+    public Vector<? extends VariableBinding> get(OID[] oids)
+            throws SNMPTimeOutException, PDURequestFailedException {
+        ResponseEvent responseEvent = null;
+        Vector<? extends VariableBinding> vbs = null;
+        try {
+            // send the PDU
+            responseEvent = snmp.send(createPDU(PDU.GET, oids), authentication.getTarget());
+            Logger.getLogger(SnmpManager.class.getName()).log(Level.INFO,
+                    responseEvent.toString());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // extract the response PDU (could be null if timed out)
+        if (responseEvent != null) {
+            PDU responsePDU = responseEvent.getResponse();
+            if (checkResponsePDU(responsePDU))
+                vbs = responsePDU.getVariableBindings();
+        } else {
+            throw new SNMPTimeOutException();
+        }
+
+        return vbs;
+    }
+
+    /**
+     * This method creates the requst and puts it in an PDU object. This object will be returnd and used from Methods such as get,walk and getnext.
+     *
+     * @param type the type of the response, possible are PDU.GET,PDU.GETNEXT, PDU.GETBULK
+     * @param oids the requested OIDs
+     * @return the request PDU
+     * @see org.snmp4j.PDU
+     */
+    public PDU createPDU(int type, OID[] oids) {
+        // create the PDU
+        PDU requestPDU = new PDU();
+        requestPDU.setType(type);
+        // put the oid you want to get
+        for (OID oid : oids) {
+            requestPDU.add(new VariableBinding(oid));
+        }
+        return requestPDU;
+    }
+
+    public List<? extends VariableBinding> getNext(OID[] oids)
+            throws SNMPTimeOutException, PDURequestFailedException {
+        ResponseEvent responseEvent = null;
+        Vector<? extends VariableBinding> vbs = null;
+        try {
+
+
+            // send the PDU
+            responseEvent = snmp.send(createPDU(PDU.GETNEXT, oids), authentication.getTarget());
+            Logger.getLogger(SnmpManager.class.getName()).log(Level.INFO,
+                    responseEvent.toString());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        // extract the response PDU (could be null if timed out)
+        if (responseEvent != null) {
+            PDU responsePDU = responseEvent.getResponse();
+            if (checkResponsePDU(responsePDU))
+                vbs = responsePDU.getVariableBindings();
+        } else {
+            throw new SNMPTimeOutException();
+        }
+        return vbs;
+    }
+
+    /**
+     * This method returns true or false, which depend on the response PDU.
+     * If the response PDU is not null and don't have an error, true will be returned.
+     *
+     * @param responsePDU
+     * @return
+     * @throws PDURequestFailedException
+     * @throws SNMPTimeOutException
+     */
+    public boolean checkResponsePDU(PDU responsePDU)
+            throws PDURequestFailedException, SNMPTimeOutException {
+        if (responsePDU != null)
+            if (responsePDU.getErrorStatus() == PDU.noError)
+                return true;
+            else
+                throw new PDURequestFailedException(responsePDU);
+        else
+            throw new SNMPTimeOutException("Timeout: No Response from "
+                    + address);
+    }
+
+    /**
+     * This method needs a valid
+     *
+     * @param rootID
+     * @return
+     */
+    public List<VariableBinding> walk(OID rootID) {
+        TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory());
+        treeUtils.setMaxRepetitions(Integer.MAX_VALUE);
+        List<TreeEvent> events = treeUtils.getSubtree(authentication.getTarget(), rootID);
+
+        // Get snmpwalk result.
+        TreeEvent event = events.get(0);
+        List<VariableBinding> varBindings = new ArrayList<VariableBinding>();
+        if (event != null) {
+            if (event.isError()) {
+                System.err.println("oid [" + rootID + "] " + event.getErrorMessage());
+            }
+            for (VariableBinding vb : event.getVariableBindings())
+                varBindings.add(vb);
+            if (varBindings == null || varBindings.size() == 0) {
+                System.out.println("No result returned.");
+            }
+            System.out.println();
+            for (VariableBinding varBinding : varBindings) {
+                System.out.println(
+                        varBinding.getOid() +
+                                " : " +
+                                varBinding.getVariable().getSyntaxString() +
+                                " : " +
+                                varBinding.getVariable());
+            }
+        }
+
+        return varBindings;
+    }
+
+    @Override
+    public void start() throws IOException {
+        transport.listen();
+    }
+
+    @Override
+    public void stop() throws IOException {
+        transport.close();
+    }
+
 
 }

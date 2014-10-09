@@ -1,4 +1,4 @@
-package root.exceptions;
+package snmp.exceptions;
 
 import org.snmp4j.PDU;
 

@@ -1,4 +1,4 @@
-package root.exceptions;
+package snmp.exceptions;
 
 /**
  * 
