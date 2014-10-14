@@ -11,7 +11,7 @@ import snmp.exceptions.OIDDoesntExistsException;
 import snmp.exceptions.PDURequestFailedException;
 import snmp.exceptions.SNMPTimeOutException;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;;
+import org.apache.log4j.Logger;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 
