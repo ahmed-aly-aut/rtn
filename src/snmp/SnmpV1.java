@@ -1,15 +1,12 @@
 package snmp;
 
-import snmp.exceptions.OIDDoesntExistsException;
-import snmp.exceptions.PDURequestFailedException;
-import snmp.exceptions.SNMPTimeOutException;
+import org.snmp4j.mp.SnmpConstants;
+import snmp.exceptions.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.snmp4j.*;
 import org.snmp4j.event.ResponseEvent;
-import org.snmp4j.mp.SnmpConstants;
 
-import snmp.exceptions.WrongTransportProtocol;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
@@ -19,33 +16,35 @@ import org.snmp4j.util.TreeUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
 public class SnmpV1 implements SnmpManager {
-    private Address address;
     private Snmp snmp;
     private TransportMapping<? extends Address> transport;
     private Authentication authentication;
 
-    public SnmpV1(String transportProtocol, String ipAddress, int port,
-                  String commmunity, int retries, int timeout) throws WrongTransportProtocol {
-        address = GenericAddress.parse(transportProtocol + ":" + ipAddress
-                + "/" + port);
-        authentication = new CommunityAuthentication(address, commmunity, SnmpConstants.version1, retries, timeout);
-        try {
-            if (transportProtocol.equalsIgnoreCase("UDP")) {
-                transport = new DefaultUdpTransportMapping();
-            } else if (transportProtocol.equalsIgnoreCase("TCP")) {
-                transport = new DefaultTcpTransportMapping();
-            } else {
-                throw new WrongTransportProtocol();
+    public SnmpV1(Authentication authentication) throws WrongTransportProtocol, WrongAuthentication, WrongSnmpVersion {
+        if (authentication instanceof CommunityAuthentication) {
+            if (authentication.getSnmpVersion() != SnmpConstants.version1)
+                throw new WrongSnmpVersion("Should be version 1");
+            this.authentication = authentication;
+            try {
+                if (authentication.getTransportProtocol().equalsIgnoreCase("UDP")) {
+                    transport = new DefaultUdpTransportMapping();
+                } else if (authentication.getTransportProtocol().equalsIgnoreCase("TCP")) {
+                    transport = new DefaultTcpTransportMapping();
+                } else {
+                    throw new WrongTransportProtocol();
+                }
+            } catch (IOException e) {
+                System.err.println("ERROR: Socket binding failed!");
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            System.err.println("ERROR: Socket binding failed!");
-            e.printStackTrace();
-        }
-        snmp = new Snmp(transport);
+            snmp = new Snmp(transport);
+        } else
+            throw new WrongAuthentication("CommunityAuthentication has to be used!");
     }
 
     /**
@@ -53,17 +52,17 @@ public class SnmpV1 implements SnmpManager {
      *
      * @param oid the requested OID
      * @return a String with the result from the specified OID
-     * @throws SNMPTimeOutException      will be thrown if a timeout with request happens
-     * @throws OIDDoesntExistsException  will be thrown if the specified OID does not exist
-     * @throws PDURequestFailedException will be thrown if an error occurs within the request
+     * @throws SNMPTimeOutException                      will be thrown if a timeout with request happens
+     * @throws snmp.exceptions.OIDDoesNotExistsException will be thrown if the specified OID does not exist
+     * @throws PDURequestFailedException                 will be thrown if an error occurs within the request
      */
     public String getAsString(OID oid) throws SNMPTimeOutException,
-            OIDDoesntExistsException, PDURequestFailedException {
+            OIDDoesNotExistsException, PDURequestFailedException {
         // extract the response PDU (could be null if timed out)
         VariableBinding ret = (VariableBinding) get(new OID[]{oid}).get(0);
         String response = ret.getVariable().toString();
         if (response.equals("noSuchObject"))
-            throw new OIDDoesntExistsException();
+            throw new OIDDoesNotExistsException();
         return response;
     }
 
@@ -165,7 +164,7 @@ public class SnmpV1 implements SnmpManager {
                 throw new PDURequestFailedException(responsePDU);
         else
             throw new SNMPTimeOutException("Timeout: No Response from "
-                    + address);
+                    + authentication.getAddress());
     }
 
     /**
@@ -186,22 +185,12 @@ public class SnmpV1 implements SnmpManager {
             if (event.isError()) {
                 System.err.println("oid [" + rootID + "] " + event.getErrorMessage());
             }
-            for (VariableBinding vb : event.getVariableBindings())
-                varBindings.add(vb);
-            if (varBindings == null || varBindings.size() == 0) {
-                System.out.println("No result returned.");
-            }
-            System.out.println();
-            for (VariableBinding varBinding : varBindings) {
-                System.out.println(
-                        varBinding.getOid() +
-                                " : " +
-                                varBinding.getVariable().getSyntaxString() +
-                                " : " +
-                                varBinding.getVariable());
+            try {
+                Collections.addAll(varBindings, event.getVariableBindings());
+            }catch(NullPointerException npe){
+                System.err.println("No result returned.");
             }
         }
-
         return varBindings;
     }
 

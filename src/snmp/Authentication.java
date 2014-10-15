@@ -1,6 +1,7 @@
 package snmp;
 
 import org.snmp4j.Target;
+import org.snmp4j.smi.Address;
 
 
 /**
@@ -16,5 +17,13 @@ public interface Authentication {
      */
     public Target getTarget();
 
+    //TODO comments
+    public String getTransportProtocol();
+
+    //TODO comments
+    public Address getAddress();
+
+    //TODO comments
+    public int getSnmpVersion();
 
 }
