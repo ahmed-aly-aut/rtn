@@ -9,15 +9,15 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 
-import root.exceptions.OIDDoesntExistsException;
-import root.exceptions.PDURequestFailedException;
-import root.exceptions.SNMPTimeOutException;
-import root.exceptions.WrongTransportProtocol;
-import root.snmp.OIDDecoder;
-import root.snmp.SnmpManager;
-import root.snmp.SnmpV2c;
-import root.snmp.SnmpV3;
-import root.ssh.SSHManager;
+import snmp.exceptions.OIDDoesntExistsException;
+import snmp.exceptions.PDURequestFailedException;
+import snmp.exceptions.SNMPTimeOutException;
+import snmp.exceptions.WrongTransportProtocol;
+import snmp.OIDDecoder;
+import snmp.SnmpManager;
+import snmp.SnmpV2c;
+import snmp.SnmpV3;
+import ssh.SSHManager;
 
 public class Main {
     public static void main(String[] args) {
