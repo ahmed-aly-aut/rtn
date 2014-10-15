@@ -3,6 +3,7 @@ package commands;
 import org.snmp4j.smi.Variable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -13,27 +14,28 @@ import java.util.Vector;
  * function to run the end command.
  *
  * @author AHMED ALY
- *
  */
-public class GetTableCommand implements Command<HashMap<Integer,Vector<Variable>>> {
+public class GetTableCommand implements Command<Vector<Vector<Variable>>> {
     private ActionCommand actionCommand;
+    private List<String> policys;
 
     /**
      * Constructor for the get table command. A parameter have to bee given over. This
      * parameter have to be a ActionCommand object.
      *
-     * @param actionCommand
-     *            object which contain the actual get table command function.
+     * @param actionCommand object which contain the actual get table command function.
+     * @param policys       List of policys the user want in a table
      */
-    public GetTableCommand(ActionCommand actionCommand) {
+    public GetTableCommand(ActionCommand actionCommand, List<String> policys) {
         this.actionCommand = actionCommand;
+        this.policys = policys;
     }
 
     /**
      * This function call the get table command function from the object ActionCommand,
      * which was given over the Constructor.
      */
-    public HashMap<Integer,Vector<Variable>> execute() {
-        return actionCommand.getTable();
+    public Vector<Vector<Variable>> execute() {
+        return actionCommand.getTable(policys);
     }
 }

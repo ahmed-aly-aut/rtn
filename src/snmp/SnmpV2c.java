@@ -1,18 +1,21 @@
 package snmp;
 
-import org.snmp4j.mp.SnmpConstants;
-import snmp.exceptions.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.snmp4j.*;
+import org.snmp4j.PDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
 import org.snmp4j.event.ResponseEvent;
-
-import org.snmp4j.smi.*;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
 import org.snmp4j.util.TreeEvent;
 import org.snmp4j.util.TreeUtils;
+import snmp.exceptions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,12 +27,14 @@ public class SnmpV2c implements SnmpManager {
     private Snmp snmp;
     private TransportMapping<? extends Address> transport;
     private Authentication authentication;
+    private Mapping mapping;
 
-    public SnmpV2c(Authentication authentication) throws WrongTransportProtocol, WrongAuthentication, WrongSnmpVersion {
+    public SnmpV2c(Authentication authentication, Mapping mapping) throws WrongTransportProtocol, WrongAuthentication, WrongSnmpVersion {
         if (authentication instanceof CommunityAuthentication) {
             if (authentication.getSnmpVersion() != SnmpConstants.version2c)
                 throw new WrongSnmpVersion("Should be version 2c");
             this.authentication = authentication;
+            this.mapping = mapping;
             try {
                 if (authentication.getTransportProtocol().equalsIgnoreCase("UDP")) {
                     transport = new DefaultUdpTransportMapping();
@@ -180,17 +185,21 @@ public class SnmpV2c implements SnmpManager {
 
         // Get snmpwalk result.
         List<VariableBinding> varBindings = new ArrayList<VariableBinding>();
-        for(int i =0;i<events.size();i++) {
+        for (int i = 0; i < events.size(); i++) {
             TreeEvent event = events.get(i);
 
             if (event != null) {
                 if (event.isError()) {
                     System.err.println("oid [" + rootID + "] " + event.getErrorMessage());
                 }
-                    Collections.addAll(varBindings, event.getVariableBindings());
+                Collections.addAll(varBindings, event.getVariableBindings());
             }
         }
         return varBindings;
+    }
+
+    public Mapping getMapping() {
+        return mapping;
     }
 
     @Override

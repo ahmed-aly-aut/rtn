@@ -1,6 +1,5 @@
 package snmp;
 
-import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.UserTarget;
 import org.snmp4j.mp.MPv3;

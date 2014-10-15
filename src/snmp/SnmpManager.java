@@ -1,16 +1,15 @@
 package snmp;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
-
 import org.snmp4j.PDU;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.VariableBinding;
-
 import snmp.exceptions.OIDDoesNotExistsException;
 import snmp.exceptions.PDURequestFailedException;
 import snmp.exceptions.SNMPTimeOutException;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Ahmed ALY<ahmed.aly@student.tgm.ac.at>
@@ -33,6 +32,7 @@ public interface SnmpManager {
 
     public List<VariableBinding> walk(OID rootID);
 
+    public Mapping getMapping();
 
     public void start() throws IOException;
 

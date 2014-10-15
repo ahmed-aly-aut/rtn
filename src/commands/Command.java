@@ -6,7 +6,6 @@ package commands;
  *
  * @author AHMED ALY
  * @version 13.10.2014
- *
  */
 public interface Command<T> {
     /**
