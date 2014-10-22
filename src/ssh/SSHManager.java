@@ -15,23 +15,12 @@ import java.util.logging.Logger;
 public class SSHManager {
     private static final Logger LOGGER = Logger.getLogger(SSHConnector.class
             .getName());
+
     private SSHConnector sshConnector;
-    public SSHManager(String userName, String password, String connectionIP,
-                        String knownHostsFileName, int connectionPort,
-                        int timeOut) {
-        sshConnector = new SSHConnector(userName,password, connectionIP,
-                knownHostsFileName, connectionPort, timeOut);
-    }
-    public SSHManager(String userName, String password, String connectionIP,
-                        String knownHostsFileName) {
-        this(userName, password, connectionIP, knownHostsFileName, 22, 60);
-    }
 
-    public SSHManager(String userName, String password, String connectionIP,
-                        String knownHostsFileName, int connectionPort) {
-        this(userName, password, connectionIP, knownHostsFileName, connectionPort, 60);
+    public SSHManager(SSHConnector sshConnector) {
+       this. sshConnector = sshConnector;
     }
-
 
     private String logWarning(String warnMessage) {
         if (warnMessage != null) {
@@ -69,5 +58,9 @@ public class SSHManager {
         }
         sshConnector.close();
         return outputBuffer.toString();
+    }
+
+    public SSHConnector getSshConnector(){
+        return sshConnector;
     }
 }

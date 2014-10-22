@@ -30,7 +30,6 @@ public class SSHConnector {
         jschSSHChannel = new JSch();
         try {
             if (knownHostsFileName != null) {
-
                 jschSSHChannel.setKnownHosts(knownHostsFileName);
 
                 sessionConnection = jschSSHChannel.getSession(userName,
@@ -47,6 +46,16 @@ public class SSHConnector {
         }
     }
 
+    public SSHConnector(String userName, String password, String connectionIP,
+                      String knownHostsFileName) {
+        this(userName, password, connectionIP, knownHostsFileName, 22, 60);
+    }
+
+    public SSHConnector(String userName, String password, String connectionIP,
+                      String knownHostsFileName, int connectionPort) {
+        this(userName, password, connectionIP, knownHostsFileName, connectionPort, 60);
+    }
+
     private String logError(String errorMessage) {
         if (errorMessage != null) {
             LOGGER.log(Level.SEVERE, "{0}:{1} - {2}", new Object[]{
@@ -58,7 +67,7 @@ public class SSHConnector {
 
     public void connect() {
         try {
-            sessionConnection.connect(timeOut * 1000);
+            sessionConnection.connect(timeOut);
         } catch (JSchException e) {
             logError(e.getMessage());
         }

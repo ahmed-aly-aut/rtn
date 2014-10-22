@@ -17,14 +17,14 @@ import java.util.Vector;
  */
 public interface SnmpManager {
     public String getAsString(OID oid) throws SNMPTimeOutException,
-            OIDDoesNotExistsException, PDURequestFailedException, OIDDoesNotExistsException;
+            PDURequestFailedException;
 
     public Vector<? extends VariableBinding> get(OID[] oids)
             throws SNMPTimeOutException, PDURequestFailedException;
 
     public PDU createPDU(int type, OID[] oids);
 
-    public List<? extends VariableBinding> getNext(OID[] oids)
+    public Vector<? extends VariableBinding> getNext(OID[] oids)
             throws SNMPTimeOutException, PDURequestFailedException;
 
     public boolean checkResponsePDU(PDU responsePDU)

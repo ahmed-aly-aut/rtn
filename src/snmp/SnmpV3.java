@@ -63,12 +63,10 @@ public class SnmpV3 implements SnmpManager {
      * @throws PDURequestFailedException                 will be thrown if an error occurs within the request
      */
     public String getAsString(OID oid) throws SNMPTimeOutException,
-            OIDDoesNotExistsException, PDURequestFailedException {
+            PDURequestFailedException {
         // extract the response PDU (could be null if timed out)
         VariableBinding ret = get(new OID[]{oid}).get(0);
         String response = ret.getVariable().toString();
-        if (response.equals("noSuchObject"))
-            throw new OIDDoesNotExistsException();
         return response;
     }
 
@@ -126,7 +124,7 @@ public class SnmpV3 implements SnmpManager {
         return requestPDU;
     }
 
-    public List<? extends VariableBinding> getNext(OID[] oids)
+    public Vector<? extends VariableBinding> getNext(OID[] oids)
             throws SNMPTimeOutException, PDURequestFailedException {
         ResponseEvent responseEvent = null;
         Vector<? extends VariableBinding> vbs = null;

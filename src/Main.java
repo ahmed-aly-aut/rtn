@@ -1,11 +1,13 @@
 import net.percederberg.mibble.MibLoaderException;
 import org.snmp4j.mp.SnmpConstants;
 
+import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 import snmp.*;
 import commands.ActionCommand;
 import commands.GetTableCommand;
 import snmp.exceptions.*;
+import ssh.SSHConnector;
 import ssh.SSHManager;
 
 import java.io.File;
@@ -19,7 +21,7 @@ import java.util.Vector;
 
 public class Main {
     public static void main(String[] args) {
-        new Main().mibble();
+        new Main().snmp();
     }
 
 
@@ -37,9 +39,11 @@ public class Main {
             l.add("nsPlyServiceName");
             l.add("nsPlySrcZone");
             GetTableCommand getTableCommand = new GetTableCommand(actionCommand,l);
+            System.out.println(getTableCommand.execute());
             for(Vector<Variable> v:getTableCommand.execute())
                 for(Variable v2:v)
                     System.out.println(v2);
+            System.out.println("Test"+snmp.get(new OID[]{new OID(".1.3.6.1.2.1.1.1.0")}));
         } catch (WrongTransportProtocol e1) {
             System.err.println(e1.getMessage());
             e1.printStackTrace();
@@ -47,12 +51,17 @@ public class Main {
             wrongAuthentication.printStackTrace();
         } catch (WrongSnmpVersion wrongSnmpVersion) {
             wrongSnmpVersion.printStackTrace();
+        } catch (SNMPTimeOutException e) {
+            e.printStackTrace();
+        } catch (PDURequestFailedException e) {
+            e.printStackTrace();
         }
     }
 
     public void ssh() {
-        SSHManager ssh = new SSHManager("aaly", "Aly1234", "10.0.105.229",
+        SSHConnector connector = new SSHConnector("aaly", "Aly1234", "10.0.2.15",
                 "/home/aaly/.ssh/known_hosts");
+        SSHManager ssh = new SSHManager(connector);
         System.out.println("connected");
         System.out.println(ssh.sendCommand("cat test"));
         System.out.println("Connection closed");
