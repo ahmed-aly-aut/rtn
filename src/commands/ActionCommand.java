@@ -4,6 +4,7 @@ import org.snmp4j.smi.OID;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.smi.VariableBinding;
 import snmp.SnmpManager;
+import snmp.exceptions.TreeEventException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,11 +22,12 @@ public class ActionCommand {
     }
 
     public Vector<Vector<Variable>> getTable(List<String> policys) {
+        Vector<Vector<Variable>> hm = null;
         try {
-            Vector<Vector<Variable>> hm = new Vector<Vector<Variable>>();
+            hm = new Vector<Vector<Variable>>();
             snmpManager.start();
-            for(String policyEntry:policys) {
-                List<VariableBinding> varBindings = snmpManager.walk(new OID(snmpManager.getMapping().readOID(policyEntry)));
+            for (String policyEntry : policys) {
+                List<VariableBinding> varBindings = snmpManager.getSubtree(new OID(snmpManager.getMapping().readOID(policyEntry)));
                 Vector<Variable> v = new Vector<Variable>();
                 for (VariableBinding vb : varBindings) {
                     v.add(vb.getVariable());
@@ -35,8 +37,10 @@ public class ActionCommand {
             snmpManager.stop();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (TreeEventException e) {
+            e.printStackTrace();
         }
 
-        return null;
+        return hm;
     }
 }

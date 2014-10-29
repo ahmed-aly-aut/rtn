@@ -8,8 +8,6 @@ import snmp.exceptions.KeyNotFoundException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 

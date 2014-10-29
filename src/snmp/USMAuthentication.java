@@ -8,7 +8,7 @@ import org.snmp4j.security.*;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OctetString;
-import snmp.exceptions.WrongSnmpVersion;
+import snmp.exceptions.WrongSnmpVersionException;
 
 /**
  * Created by aaly on 09.10.14.
@@ -20,7 +20,7 @@ public class USMAuthentication implements Authentication {
     private UsmUser user;
     private String transportProtocol;
 
-    public USMAuthentication(String transportProtocol, String ipAddress, int port, String userName, String password, int securityLevel, String securityName, int snmpVersion, int timeout, int retries) throws WrongSnmpVersion {
+    public USMAuthentication(String transportProtocol, String ipAddress, int port, String userName, String password, int securityLevel, String securityName, int snmpVersion, int timeout, int retries) throws WrongSnmpVersionException {
         this.address = GenericAddress.parse(transportProtocol + ":" + ipAddress
                 + "/" + port);
         this.securityLevel = securityLevel;
@@ -28,7 +28,7 @@ public class USMAuthentication implements Authentication {
         if (snmpVersion == SnmpConstants.version3)
             this.snmpVersion = snmpVersion;
         else
-            throw new WrongSnmpVersion();
+            throw new WrongSnmpVersionException();
         this.retries = retries;
         this.timeout = timeout;
         this.transportProtocol = transportProtocol;
@@ -41,11 +41,11 @@ public class USMAuthentication implements Authentication {
                 PrivDES.ID, new OctetString(password));
     }
 
-    public USMAuthentication(String transportProtocol, String ipAddress, int port, String userName, String password, int securityLevel, String securityName, int snmpVersion, int timeout) throws WrongSnmpVersion {
+    public USMAuthentication(String transportProtocol, String ipAddress, int port, String userName, String password, int securityLevel, String securityName, int snmpVersion, int timeout) throws WrongSnmpVersionException {
         this(transportProtocol, ipAddress, port, userName, password, securityLevel, securityName, snmpVersion, timeout, 3);
     }
 
-    public USMAuthentication(String transportProtocol, String ipAddress, int port, String userName, String password, int securityLevel, String securityName, int snmpVersion) throws WrongSnmpVersion {
+    public USMAuthentication(String transportProtocol, String ipAddress, int port, String userName, String password, int securityLevel, String securityName, int snmpVersion) throws WrongSnmpVersionException {
         this(transportProtocol, ipAddress, port, userName, password, securityLevel, securityName, snmpVersion, 6000, 3);
     }
 

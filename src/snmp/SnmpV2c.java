@@ -23,16 +23,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+/**
+ *
+ */
 public class SnmpV2c implements SnmpManager {
     private Snmp snmp;
     private TransportMapping<? extends Address> transport;
     private Authentication authentication;
     private Mapping mapping;
 
-    public SnmpV2c(Authentication authentication, Mapping mapping) throws WrongTransportProtocol, WrongAuthentication, WrongSnmpVersion {
+    /**
+     * @param authentication
+     * @param mapping
+     * @throws WrongTransportProtocolException
+     * @throws WrongAuthenticationException
+     * @throws WrongSnmpVersionException
+     */
+    public SnmpV2c(Authentication authentication, Mapping mapping) throws WrongTransportProtocolException, WrongAuthenticationException, WrongSnmpVersionException {
         if (authentication instanceof CommunityAuthentication) {
             if (authentication.getSnmpVersion() != SnmpConstants.version2c)
-                throw new WrongSnmpVersion("Should be version 2c");
+                throw new WrongSnmpVersionException("Should be version 2c");
             this.authentication = authentication;
             this.mapping = mapping;
             try {
@@ -41,15 +51,14 @@ public class SnmpV2c implements SnmpManager {
                 } else if (authentication.getTransportProtocol().equalsIgnoreCase("TCP")) {
                     transport = new DefaultTcpTransportMapping();
                 } else {
-                    throw new WrongTransportProtocol();
+                    throw new WrongTransportProtocolException();
                 }
             } catch (IOException e) {
-                System.err.println("ERROR: Socket binding failed!");
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
             snmp = new Snmp(transport);
         } else
-            throw new WrongAuthentication("CommunityAuthentication has to be used!");
+            throw new WrongAuthenticationException("CommunityAuthentication has to be used!");
     }
 
     /**
@@ -57,15 +66,16 @@ public class SnmpV2c implements SnmpManager {
      *
      * @param oid the requested OID
      * @return a String with the result from the specified OID
-     * @throws SNMPTimeOutException                      will be thrown if a timeout with request happens
-     * @throws snmp.exceptions.OIDDoesNotExistsException will be thrown if the specified OID does not exist
-     * @throws PDURequestFailedException                 will be thrown if an error occurs within the request
+     * @throws SNMPTimeOutException      will be thrown if a timeout with request happens
+     * @throws PDURequestFailedException will be thrown if an error occurs within the request
      */
     public String getAsString(OID oid) throws SNMPTimeOutException,
-            PDURequestFailedException {
+            PDURequestFailedException, OIDDoesNotExistsException {
         // extract the response PDU (could be null if timed out)
-        VariableBinding ret = get(new OID[]{oid}).get(0);
+        VariableBinding ret = (VariableBinding) get(new OID[]{oid}).get(0);
         String response = ret.getVariable().toString();
+        if (response.equals("noSuchObject"))
+            throw new OIDDoesNotExistsException();
         return response;
     }
 
@@ -89,8 +99,7 @@ public class SnmpV2c implements SnmpManager {
             Logger.getLogger(SnmpManager.class.getName()).log(Level.INFO,
                     responseEvent.toString());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         // extract the response PDU (could be null if timed out)
         if (responseEvent != null) {
@@ -107,9 +116,9 @@ public class SnmpV2c implements SnmpManager {
     /**
      * This method creates the requst and puts it in an PDU object. This object will be returnd and used from Methods such as get,walk and getnext.
      *
-     * @param type the type of the response, possible are PDU.GET,PDU.GETNEXT, PDU.GETBULK
-     * @param oids the requested OIDs
-     * @return the request PDU
+     * @param type - the type of the response, possible are PDU.GET,PDU.GETNEXT, PDU.GETBULK
+     * @param oids - the requested OIDs
+     * @return - the request PDU
      * @see org.snmp4j.PDU
      */
     public PDU createPDU(int type, OID[] oids) {
@@ -123,20 +132,23 @@ public class SnmpV2c implements SnmpManager {
         return requestPDU;
     }
 
+    /**
+     * @param oids
+     * @return
+     * @throws SNMPTimeOutException
+     * @throws PDURequestFailedException
+     */
     public Vector<? extends VariableBinding> getNext(OID[] oids)
             throws SNMPTimeOutException, PDURequestFailedException {
         ResponseEvent responseEvent = null;
         Vector<? extends VariableBinding> vbs = null;
         try {
-
-
             // send the PDU
             responseEvent = snmp.send(createPDU(PDU.GETNEXT, oids), authentication.getTarget());
             Logger.getLogger(SnmpManager.class.getName()).log(Level.INFO,
                     responseEvent.toString());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
         // extract the response PDU (could be null if timed out)
         if (responseEvent != null) {
@@ -153,10 +165,11 @@ public class SnmpV2c implements SnmpManager {
      * This method returns true or false, which depend on the response PDU.
      * If the response PDU is not null and don't have an error, true will be returned.
      *
-     * @param responsePDU
-     * @return
-     * @throws PDURequestFailedException
-     * @throws SNMPTimeOutException
+     * @param responsePDU the responsePDU, which will be checked for errors.
+     * @return - true if no error was invoked else false.
+     * @throws PDURequestFailedException - If an error occurred in the response PDU.
+     * @throws SNMPTimeOutException      - If a timeout occured
+     * @see org.snmp4j.PDU
      */
     public boolean checkResponsePDU(PDU responsePDU)
             throws PDURequestFailedException, SNMPTimeOutException {
@@ -171,40 +184,51 @@ public class SnmpV2c implements SnmpManager {
     }
 
     /**
-     * This method needs a valid
+     * This method needs a valid root OID to return a VariableBinding list with the sub entities.
      *
-     * @param rootID
-     * @return
+     * @param rootID - The root OID
+     * @return - a list containing VariableBinding
      */
-    public List<VariableBinding> walk(OID rootID) {
+    public List<VariableBinding> getSubtree(OID rootID) throws TreeEventException {
         TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory());
         treeUtils.setMaxRepetitions(Integer.MAX_VALUE);
         List<TreeEvent> events = treeUtils.getSubtree(authentication.getTarget(), rootID);
 
         // Get snmpwalk result.
         List<VariableBinding> varBindings = new ArrayList<VariableBinding>();
-        for (int i = 0; i < events.size(); i++) {
-            TreeEvent event = events.get(i);
-
+        for (TreeEvent event : events) {
             if (event != null) {
-                if (event.isError()) {
-                    System.err.println("oid [" + rootID + "] " + event.getErrorMessage());
-                }
+                if (event.isError())
+                    throw new TreeEventException("oid [" + rootID + "] " + event.getErrorMessage());
                 Collections.addAll(varBindings, event.getVariableBindings());
             }
         }
         return varBindings;
     }
 
+    /**
+     * @return the mapping Object
+     */
     public Mapping getMapping() {
         return mapping;
     }
 
+    /**
+     * This method has to be invoked before sending the message.
+     * It listens for incoming messages.
+     *
+     * @throws IOException - if an IO operation exception occurs while starting the listener.
+     */
     @Override
     public void start() throws IOException {
         transport.listen();
     }
 
+    /**
+     * Stops the thread, which is listening for the incoming messages and releases all bound resources synchronously.
+     *
+     * @throws IOException - if any IO operation for the close fails.
+     */
     @Override
     public void stop() throws IOException {
         transport.close();

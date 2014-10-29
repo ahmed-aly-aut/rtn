@@ -6,7 +6,7 @@ import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Address;
 import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OctetString;
-import snmp.exceptions.WrongSnmpVersion;
+import snmp.exceptions.WrongSnmpVersionException;
 
 /**
  * Created by aaly on 09.10.14.
@@ -18,7 +18,7 @@ public class CommunityAuthentication implements Authentication {
 
     private String transportProtocol;
 
-    public CommunityAuthentication(String transportProtocol, String ipAddress, int port, String community, int snmpVersion, int timeout, int retries) throws WrongSnmpVersion {
+    public CommunityAuthentication(String transportProtocol, String ipAddress, int port, String community, int snmpVersion, int timeout, int retries) throws WrongSnmpVersionException {
         this.address = GenericAddress.parse(transportProtocol + ":" + ipAddress
                 + "/" + port);
         this.community = community;
@@ -26,16 +26,16 @@ public class CommunityAuthentication implements Authentication {
         if (snmpVersion == SnmpConstants.version1 || snmpVersion == SnmpConstants.version2c)
             this.snmpVersion = snmpVersion;
         else
-            throw new WrongSnmpVersion();
+            throw new WrongSnmpVersionException();
         this.retries = retries;
         this.timeout = timeout;
     }
 
-    public CommunityAuthentication(String transportProtocol, String ipAddress, int port, String community, int snmpVersion, int timeout) throws WrongSnmpVersion {
+    public CommunityAuthentication(String transportProtocol, String ipAddress, int port, String community, int snmpVersion, int timeout) throws WrongSnmpVersionException {
         this(transportProtocol, ipAddress, port, community, snmpVersion, timeout, 3);
     }
 
-    public CommunityAuthentication(String transportProtocol, String ipAddress, int port, String community, int snmpVersion) throws WrongSnmpVersion {
+    public CommunityAuthentication(String transportProtocol, String ipAddress, int port, String community, int snmpVersion) throws WrongSnmpVersionException {
         this(transportProtocol, ipAddress, port, community, snmpVersion, 6000, 3);
     }
 
