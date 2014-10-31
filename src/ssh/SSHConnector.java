@@ -48,12 +48,12 @@ public class SSHConnector {
 
     public SSHConnector(String userName, String password, String connectionIP,
                       String knownHostsFileName) {
-        this(userName, password, connectionIP, knownHostsFileName, 22, 60);
+        this(userName, password, connectionIP, knownHostsFileName, 22, 1000);
     }
 
     public SSHConnector(String userName, String password, String connectionIP,
                       String knownHostsFileName, int connectionPort) {
-        this(userName, password, connectionIP, knownHostsFileName, connectionPort, 60);
+        this(userName, password, connectionIP, knownHostsFileName, connectionPort, 1000);
     }
 
     private String logError(String errorMessage) {
@@ -67,8 +67,7 @@ public class SSHConnector {
 
     public void connect() {
         try {
-//            sessionConnection.connect(timeOut);
-        	sessionConnection.connect();
+            sessionConnection.connect(timeOut);
         } catch (JSchException e) {
             logError(e.getMessage());
         }
