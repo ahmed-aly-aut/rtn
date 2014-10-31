@@ -1,5 +1,6 @@
 package graphic.view;
 import graphic.GraphicApp;
+import graphic.model.Input;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
@@ -33,6 +34,7 @@ public class GraphicConfigController {
     
     // Reference to the main application.
     private GraphicApp graphicApp;
+    private Input input;
     
     /**
      * The constructor.
@@ -47,6 +49,10 @@ public class GraphicConfigController {
      */
     @FXML
     private void initialize() {
+        ipField.setText(this.input.getIP());
+        portField.setText(this.input.getPort());
+        sshuserField.setText(this.input.getSSHUname());
+        sshpassField.setText(this.input.getSSHPass());
         
     }
 
