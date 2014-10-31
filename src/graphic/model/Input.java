@@ -229,7 +229,7 @@ public class Input {
     	return v2cbttn;
     }
     
-    public void setV2cBttn(String v2cbttn){
+    public void setV2cBttn(boolean v2cbttn){
     	this.setV2cBttn(v2cbttn);
     }
     
@@ -238,7 +238,7 @@ public class Input {
     	return v3bttn;
     }
     
-    public void setV3Bttn(String v3bttn){
+    public void setV3Bttn(boolean v3bttn){
     	this.setV3Bttn(v3bttn);
     }
 }

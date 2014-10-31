@@ -49,11 +49,21 @@ public class GraphicConfigController {
      */
     @FXML
     private void initialize() {
-        ipField.setText(this.input.getIP());
+    }
+    
+    private void setInput(Input input){
+    	ipField.setText(this.input.getIP());
         portField.setText(this.input.getPort());
         sshuserField.setText(this.input.getSSHUname());
         sshpassField.setText(this.input.getSSHPass());
+        if(v2cButton.isSelected() == true){
+        	this.input.setV2cBttn(true);
+        }else{
+        	this.input.setV3Bttn(true);
+        }
         
+        
+        this.input = input;
     }
 
     /**

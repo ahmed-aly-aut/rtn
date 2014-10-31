@@ -15,7 +15,7 @@
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
             </Label>
-            <TextField prefHeight="25.0" prefWidth="110.0">
+            <TextField fx:id="ipField" prefHeight="25.0" prefWidth="110.0">
                <HBox.margin>
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
@@ -25,7 +25,7 @@
                   <Insets bottom="1.0" left="30.0" top="2.0" />
                </HBox.margin>
             </Label>
-            <TextField prefHeight="25.0" prefWidth="109.0">
+            <TextField fx:id="sshuserField" prefHeight="25.0" prefWidth="109.0">
                <HBox.margin>
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
@@ -39,7 +39,7 @@
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
             </Label>
-            <TextField prefHeight="25.0" prefWidth="110.0">
+            <TextField fx:id="portField" prefHeight="25.0" prefWidth="110.0">
                <HBox.margin>
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
@@ -49,7 +49,7 @@
                   <Insets bottom="1.0" left="20.0" top="2.0" />
                </HBox.margin>
             </Label>
-            <PasswordField prefHeight="25.0" prefWidth="109.0">
+            <PasswordField fx:id="sshpassField" prefHeight="25.0" prefWidth="109.0">
                <HBox.margin>
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
@@ -57,13 +57,13 @@
          </children>
       </HBox>
       <Label layoutX="14.0" layoutY="85.0" text="SNMP-Version :" AnchorPane.leftAnchor="20.0" />
-      <RadioButton layoutX="113.0" layoutY="85.0" mnemonicParsing="false" text="v2c">
+      <RadioButton fx:id="v2cButton" layoutX="113.0" layoutY="85.0" mnemonicParsing="false" text="v2c">
          <toggleGroup>
             <ToggleGroup fx:id="SNMP" />
          </toggleGroup></RadioButton>
-      <RadioButton layoutX="113.0" layoutY="115.0" mnemonicParsing="false" text="v3" toggleGroup="$SNMP" />
+      <RadioButton fx:id="v3Button" layoutX="113.0" layoutY="115.0" mnemonicParsing="false" text="v3" toggleGroup="$SNMP" />
       <Label layoutX="20.0" layoutY="163.0" text="Timeinterval :" AnchorPane.leftAnchor="20.0" />
-      <TextField layoutX="104.0" layoutY="159.0" prefHeight="25.0" prefWidth="110.0" />
+      <TextField fx:id="timeintField" layoutX="104.0" layoutY="159.0" prefHeight="25.0" prefWidth="110.0" />
       <Button layoutX="334.0" layoutY="261.0" mnemonicParsing="false" onAction="#confirmButton" text="Confirm" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>
