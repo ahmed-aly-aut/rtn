@@ -4,6 +4,12 @@ import ssh.SSHConnector;
 import ssh.SSHManager;
 import content.Base;
 
+/**
+ * A Class to set the policies on the router
+ * @author Helmuth Brunner
+ * @version Oct 31, 2014
+ * Current project: RTN
+ */
 public class SetPolicy {
 
 	private Base base= Base.get();
