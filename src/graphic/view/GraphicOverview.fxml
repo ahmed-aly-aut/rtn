@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphic.view.GraphicOverviewController">
+<AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphic.view.GraphicOverviewController">
    <children>
       <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="500.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -15,10 +15,16 @@
                <children>
                   <TableView fx:id="inputTable" prefHeight="246.0" prefWidth="598.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <columns>
-                      <TableColumn fx:id="plyIDColumn" prefWidth="150.0" text="ID" />
-                      <TableColumn fx:id="plyServiceNameColumn" prefWidth="150.0" text="ServiceName" />
-                        <TableColumn fx:id="plySrcZoneColumn" prefWidth="150.0" text="Zones" />
-                        <TableColumn fx:id="plyNameColumn" minWidth="0.0" prefWidth="150.0" text="Names" />
+                      <TableColumn fx:id="plyIDColumn" prefWidth="62.0" text="ID" />
+                      <TableColumn fx:id="plyNameColumn" maxWidth="70.0" prefWidth="65.0" text="Name" />
+                        <TableColumn fx:id="plyServiceColumn" prefWidth="65.0" text="Service" />
+                        <TableColumn fx:id="plyServiceNameColumn" prefWidth="90.0" text="ServiceName" />
+                        <TableColumn fx:id="plySrcZoneColumn" minWidth="0.0" prefWidth="65.0" text="SrcZones" />
+                        <TableColumn fx:id="plyDstZoneColumn" minWidth="0.0" prefWidth="65.0" text="DstZones" />
+                        <TableColumn fx:id="plySrcAddrColumn" minWidth="0.0" prefWidth="65.0" text="SrcAddr" />
+                        <TableColumn fx:id="plyDstAddrColumn" minWidth="0.0" prefWidth="65.0" text="DstAddr" />
+                        <TableColumn fx:id="plyActionColumn" prefWidth="65.0" text="Action" />
+                        <TableColumn fx:id="plyActiveStatusColumn" prefWidth="90.0" text="ActiveStatus" />
                     </columns>
                   </TableView>
                   <HBox layoutY="215.0" maxHeight="32.0" minHeight="32.0" prefHeight="32.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">

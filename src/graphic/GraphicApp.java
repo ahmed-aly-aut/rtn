@@ -42,10 +42,10 @@ public class GraphicApp extends Application {
     
     public GraphicApp(){
     	for(int i = 0; i<10;i++){
-    		addInput.add(new Input("53"+i,"ANY", "Trust", "P46P"+i));
+    		addInput.add(new Input("53"+i,"ANY", "Trust", "P46P"+i,"1","2","3","4","5","6"));
     	}
     	for(int j = 10; j<20;j++){
-    		addInput2.add(new Input("53"+j,"ANY", "Trust", "P46P"+j));
+    		addInput2.add(new Input("53"+j,"ANY", "Trust", "P46P"+j,"1","2","3","4","5","6"));
     	}
     }
     
@@ -53,7 +53,7 @@ public class GraphicApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Graphica User Interface");
+        this.primaryStage.setTitle("Graphical User Interface");
 
         initRootLayout();
 

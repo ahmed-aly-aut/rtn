@@ -13,11 +13,24 @@ public class GraphicOverviewController {
     @FXML
     private TableColumn<Input, String> plyIDColumn;
     @FXML
+    private TableColumn<Input, String> plyNameColumn;
+    @FXML
+    private TableColumn<Input, String> plyServiceColumn;
+    @FXML
     private TableColumn<Input, String> plyServiceNameColumn;
     @FXML
     private TableColumn<Input, String> plySrcZoneColumn;
     @FXML
-    private TableColumn<Input, String> plyNameColumn;
+    private TableColumn<Input, String> plyDstZoneColumn;
+    @FXML
+    private TableColumn<Input, String> plySrcAddrColumn;
+    @FXML
+    private TableColumn<Input, String> plyDstAddrColumn;
+    @FXML
+    private TableColumn<Input, String> plyActionColumn;
+    @FXML
+    private TableColumn<Input, String> plyActiveStatusColumn;
+    
     
 
     // Reference to the main application.
@@ -36,17 +49,23 @@ public class GraphicOverviewController {
      */
     @FXML
     private void initialize() {
-        // Initialize the person table with the two columns.
+        // Initialize the table with the two columns.
         plyIDColumn.setCellValueFactory(cellData -> cellData.getValue().plyIDProperty());
+        plyNameColumn.setCellValueFactory(cellData -> cellData.getValue().plyNameProperty());
+        plyServiceColumn.setCellValueFactory(cellData -> cellData.getValue().plyServiceProperty());
         plyServiceNameColumn.setCellValueFactory(cellData -> cellData.getValue().plyServiceNameProperty());
         plySrcZoneColumn.setCellValueFactory(cellData -> cellData.getValue().plySrcZoneProperty());
-        plyNameColumn.setCellValueFactory(cellData -> cellData.getValue().plyNameProperty());
+        plyDstZoneColumn.setCellValueFactory(cellData -> cellData.getValue().plyDstZoneProperty());
+        plySrcAddrColumn.setCellValueFactory(cellData -> cellData.getValue().plySrcAddrProperty());
+        plyDstAddrColumn.setCellValueFactory(cellData -> cellData.getValue().plyDstAddrProperty());
+        plyActionColumn.setCellValueFactory(cellData -> cellData.getValue().plyActionProperty());
+        plyActiveStatusColumn.setCellValueFactory(cellData -> cellData.getValue().plyActiveStatusProperty());
     }
 
     /**
      * Is called by the main application to give a reference back to itself.
      * 
-     * @param mainApp
+     * @param graphicApp
      */
     public void setGraphicApp(GraphicApp graphicApp) {
         this.graphicApp = graphicApp;

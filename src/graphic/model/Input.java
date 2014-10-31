@@ -1,9 +1,6 @@
 package graphic.model;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -15,19 +12,33 @@ import javafx.beans.property.StringProperty;
 public class Input {
 
     private final StringProperty PlyID;
+    private final StringProperty PlyName;
+    private final StringProperty PlyService;
     private final StringProperty PlyServiceName;
     private final StringProperty PlySrcZone;
-    private final StringProperty PlyName;
+    private final StringProperty PlyDstZone;
+    private final StringProperty PlySrcAddr;
+    private final StringProperty PlyDstAddr;
+    private final StringProperty PlyAction;
+    private final StringProperty PlyActiveStatus;
 
 
     /**
      * Default constructor.
      */
-    public Input(String PlyID, String PlyServiceName, String PlySrcZone, String PlyName) {
+    public Input(String PlyID,String PlyName, String PlyService, String PlyServiceName, String PlySrcZone,
+    		String PlyDstZone, String PlySrcAddr, String PlyDstAddr, String PlyAction, String PlyActiveStatus) {
     	this.PlyID = new SimpleStringProperty(PlyID);
+    	this.PlyName = new SimpleStringProperty(PlyName);
+    	this.PlyService = new SimpleStringProperty(PlyService);
     	this.PlyServiceName = new SimpleStringProperty(PlyServiceName);
     	this.PlySrcZone = new SimpleStringProperty(PlySrcZone);
-    	this.PlyName = new SimpleStringProperty(PlyName);
+    	this.PlyDstZone = new SimpleStringProperty(PlyDstZone);
+    	this.PlySrcAddr = new SimpleStringProperty(PlySrcAddr);
+    	this.PlyDstAddr = new SimpleStringProperty(PlyDstAddr);
+    	this.PlyAction = new SimpleStringProperty(PlyAction);
+    	this.PlyActiveStatus = new SimpleStringProperty(PlyActiveStatus);
+    	
     }
 
     public String getPlyID(){
@@ -41,6 +52,32 @@ public class Input {
     public StringProperty plyIDProperty(){
     	return PlyID;
     }
+    
+    
+    public String getPlyName(){
+    	return PlyName.get();
+    }
+    
+    public void setPlyName(String PlyName){
+    	this.setPlyName(PlyName);
+    }
+    
+    public StringProperty plyNameProperty(){
+    	return PlyName;
+    }   
+    
+    
+    public String getPlyService(){
+    	return PlyName.get();
+    }
+    
+    public void setPlyService(String PlyService){
+    	this.setPlyService(PlyService);
+    }
+    
+    public StringProperty plyServiceProperty(){
+    	return PlyService;
+    }   
     
     
     public String getPlyServiceName(){
@@ -69,20 +106,69 @@ public class Input {
     }
     
     
-    public String getPlyName(){
-    	return PlyName.get();
+    public String getPlyDstZone(){
+    	return PlyDstZone.get();
     }
     
-    public void setPlyName(String PlyName){
-    	this.setPlyName(PlyName);
+    public void setPlyDstZone(String PlyDstZone){
+    	this.setPlyDstZone(PlyDstZone);
     }
     
-    public StringProperty plyNameProperty(){
-    	return PlyName;
+    public StringProperty plyDstZoneProperty(){
+    	return PlyDstZone;
     }   
     
     
+    public String getPlySrcAddr(){
+    	return PlySrcAddr.get();
+    }
     
+    public void setPlySrcAddr(String PlySrcAddr){
+    	this.setPlySrcAddr(PlySrcAddr);
+    }
+    
+    public StringProperty plySrcAddrProperty(){
+    	return PlySrcAddr;
+    }
+    
+    
+    public String getPlyDstAddr(){
+    	return PlyDstAddr.get();
+    }
+    
+    public void setPlyDstAddr(String PlyDstAddr){
+    	this.setPlyDstAddr(PlyDstAddr);
+    }
+    
+    public StringProperty plyDstAddrProperty(){
+    	return PlyDstAddr;
+    }   
+    
+    
+    public String getPlyAction(){
+    	return PlyAction.get();
+    }
+    
+    public void setPlyAction(String PlyAction){
+    	this.setPlyAction(PlyAction);
+    }
+    
+    public StringProperty plyActionProperty(){
+    	return PlyAction;
+    }
+    
+    
+    public String getPlyActiveStatus(){
+    	return PlyActiveStatus.get();
+    }
+    
+    public void setPlyActiveStatus(String PlyActiveStatus){
+    	this.setPlyActiveStatus(PlyActiveStatus);
+    }
+    
+    public StringProperty plyActiveStatusProperty(){
+    	return PlyActiveStatus;
+    }   
     
     
     
