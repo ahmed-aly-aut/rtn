@@ -1,28 +1,36 @@
 package snmp;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.SecurityLevel;
-import org.snmp4j.smi.OID;
-import org.snmp4j.smi.Variable;
-import org.snmp4j.smi.VariableBinding;
-import snmp.exceptions.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Vector;
-
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Vector;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.internal.matchers.Contains;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.SecurityLevel;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.Variable;
+import org.snmp4j.smi.VariableBinding;
+
+import snmp.exceptions.OIDDoesNotExistsException;
+import snmp.exceptions.PDURequestFailedException;
+import snmp.exceptions.SNMPTimeOutException;
+import snmp.exceptions.TreeEventException;
+import snmp.exceptions.WrongAuthenticationException;
+import snmp.exceptions.WrongSnmpVersionException;
+import snmp.exceptions.WrongTransportProtocolException;
 
 @RunWith(JUnit4.class)
 public class SnmpV1Test {

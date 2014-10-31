@@ -24,10 +24,10 @@ public class SSHManagerTest {
 
     @Before
     public void setUp() {
-        command = "cat test";
-        userName = "aaly";
-        password = "Aly1234";
-        connectionIP = "10.0.104.98";
+        command = "get policy";
+        userName = "5ahit";
+        password = "Waeng7ohch8o";
+        connectionIP = "10.0.100.10";
         connectionPort = 22;
         timeOutMilliseconds = 60000;
         knownHostsFileName = "/home/aaly/.ssh/known_hosts";
@@ -45,7 +45,8 @@ public class SSHManagerTest {
         String expResult = "TestCat\n";
         // call sendCommand for each command and the output
         // (without prompts) is returned
-        String result = sshManager.sendCommand(command);
+        String result = sshManager.sendCommand("get policy");
+        System.out.println(result);
         assertEquals(expResult, result);
     }
 
