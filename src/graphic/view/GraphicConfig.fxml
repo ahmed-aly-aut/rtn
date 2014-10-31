@@ -6,8 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+<AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphic.view.GraphicConfigController">
    <children>
       <HBox layoutX="14.0" layoutY="9.0" prefHeight="27.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
@@ -50,17 +49,21 @@
                   <Insets bottom="1.0" left="20.0" top="2.0" />
                </HBox.margin>
             </Label>
-            <TextField prefHeight="25.0" prefWidth="109.0">
+            <PasswordField prefHeight="25.0" prefWidth="109.0">
                <HBox.margin>
                   <Insets bottom="1.0" left="10.0" top="2.0" />
                </HBox.margin>
-            </TextField>
+            </PasswordField>
          </children>
       </HBox>
       <Label layoutX="14.0" layoutY="85.0" text="SNMP-Version :" AnchorPane.leftAnchor="20.0" />
-      <RadioButton layoutX="113.0" layoutY="85.0" mnemonicParsing="false" text="v2c" />
-      <RadioButton layoutX="113.0" layoutY="115.0" mnemonicParsing="false" text="v3" />
+      <RadioButton layoutX="113.0" layoutY="85.0" mnemonicParsing="false" text="v2c">
+         <toggleGroup>
+            <ToggleGroup fx:id="SNMP" />
+         </toggleGroup></RadioButton>
+      <RadioButton layoutX="113.0" layoutY="115.0" mnemonicParsing="false" text="v3" toggleGroup="$SNMP" />
       <Label layoutX="20.0" layoutY="163.0" text="Timeinterval :" AnchorPane.leftAnchor="20.0" />
       <TextField layoutX="104.0" layoutY="159.0" prefHeight="25.0" prefWidth="110.0" />
+      <Button layoutX="334.0" layoutY="261.0" mnemonicParsing="false" onAction="#confirmButton" text="Confirm" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

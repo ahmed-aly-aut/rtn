@@ -31,6 +31,7 @@ import java.util.Vector;
 public class GraphicApp extends Application {
 
     private Stage primaryStage;
+    private AnchorPane configLayout;
     private BorderPane rootLayout;
     private ObservableList<Input> addInput = FXCollections.observableArrayList();
     private ObservableList<Input> addInput2 = FXCollections.observableArrayList();
@@ -48,13 +49,20 @@ public class GraphicApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Graphical User Interface");
+        this.primaryStage.setTitle("Startup Config");
 
-        initRootLayout();
-
-        showGraphicOverview();
+        showGraphicConfig();
     }
 
+    public void start1(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Graphical User Interface");
+    
+        initRootLayout();
+        
+        showGraphicOverview();
+    }
+    
     /**
      * Initializes the root layout.
      */
@@ -94,7 +102,23 @@ public class GraphicApp extends Application {
             e.printStackTrace();
         }
     }
+    
+    public void showGraphicConfig(){
+    	 try {
+             // Load root layout from fxml file.
+             FXMLLoader loader = new FXMLLoader();
+             loader.setLocation(GraphicApp.class.getResource("view/GraphicConfig.fxml"));
+             configLayout = (AnchorPane) loader.load();
 
+             // Show the scene containing the root layout.
+             Scene scene = new Scene(configLayout);
+             primaryStage.setScene(scene);
+             primaryStage.show();
+         } catch (IOException e) {
+             e.printStackTrace();
+         }
+    }
+    
     /**
      * Returns the main stage.
      *
