@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphic.view.GraphicConfigController">
+<AnchorPane prefHeight="300.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphic.view.GraphicConfigController">
    <children>
       <HBox layoutX="14.0" layoutY="9.0" prefHeight="27.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
@@ -22,7 +22,7 @@
             </TextField>
             <Label prefHeight="25.0" prefWidth="82.0" text="ssh-username :">
                <HBox.margin>
-                  <Insets bottom="1.0" left="30.0" top="2.0" />
+                  <Insets bottom="1.0" left="50.0" top="2.0" />
                </HBox.margin>
             </Label>
             <TextField fx:id="sshuserField" prefHeight="25.0" prefWidth="109.0">
@@ -32,7 +32,7 @@
             </TextField>
          </children>
       </HBox>
-      <HBox layoutX="12.0" layoutY="46.0" prefHeight="27.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0">
+      <HBox layoutX="12.0" layoutY="46.0" prefHeight="27.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
          <children>
             <Label prefHeight="25.0" prefWidth="30.0" text="Port :">
                <HBox.margin>
@@ -46,7 +46,7 @@
             </TextField>
             <Label prefHeight="25.0" prefWidth="82.0" text="ssh-password :">
                <HBox.margin>
-                  <Insets bottom="1.0" left="20.0" top="2.0" />
+                  <Insets bottom="1.0" left="50.0" top="2.0" />
                </HBox.margin>
             </Label>
             <PasswordField fx:id="sshpassField" prefHeight="25.0" prefWidth="109.0">

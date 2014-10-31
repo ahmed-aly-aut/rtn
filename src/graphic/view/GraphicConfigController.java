@@ -51,20 +51,20 @@ public class GraphicConfigController {
     private void initialize() {
     }
     
-    private void setInput(Input input){
-    	ipField.setText(this.input.getIP());
-        portField.setText(this.input.getPort());
-        sshuserField.setText(this.input.getSSHUname());
-        sshpassField.setText(this.input.getSSHPass());
-        if(v2cButton.isSelected() == true){
-        	this.input.setV2cBttn(true);
-        }else{
-        	this.input.setV3Bttn(true);
-        }
-        
-        
-        this.input = input;
-    }
+//    private void setInput(Input input){
+//    	ipField.setText(this.input.getIP());
+//        portField.setText(this.input.getPort());
+//        sshuserField.setText(this.input.getSSHUname());
+//        sshpassField.setText(this.input.getSSHPass());
+//        if(v2cButton.isSelected() == true){
+//        	this.input.setV2cBttn(true);
+//        }else{
+//        	this.input.setV3Bttn(true);
+//        }
+//        
+//        
+//        this.input = input;
+//    }
 
     /**
      * Is called by the main application to give a reference back to itself.
@@ -76,7 +76,7 @@ public class GraphicConfigController {
     }
 
     public void confirmButton(){
-    	this.graphicApp.start1(null);
+    	this.graphicApp.start(this.graphicApp.primaryStage);
     }
     
 }

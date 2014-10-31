@@ -30,7 +30,7 @@ import java.util.Vector;
  */
 public class GraphicApp extends Application {
 
-    private Stage primaryStage;
+    public Stage primaryStage;
     private AnchorPane configLayout;
     private BorderPane rootLayout;
     private ObservableList<Input> addInput = FXCollections.observableArrayList();
@@ -48,13 +48,6 @@ public class GraphicApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Startup Config");
-
-        showGraphicConfig();
-    }
-
-    public void start1(Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Graphical User Interface");
     
