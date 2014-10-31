@@ -77,6 +77,6 @@ public class GraphicOverviewController {
     public void refreshButton(){
     	inputTable.getColumns().get(0).setVisible(false);
     	inputTable.getColumns().get(0).setVisible(true);
-    	inputTable.setItems(graphicApp.getInput2());
+    	inputTable.setItems(graphicApp.getInput());
     }
 }
