@@ -21,6 +21,15 @@ public class Input {
     private final StringProperty PlyDstAddr;
     private final StringProperty PlyAction;
     private final StringProperty PlyActiveStatus;
+    
+    private String ip;
+    private String port;
+    private String sshuname;
+    private String sshpass;
+    private String timeint;
+    private Boolean v2cbttn;
+    private Boolean v3bttn;
+    
 
 
     /**
@@ -171,8 +180,65 @@ public class Input {
     }   
     
     
+    public String getIP(){
+    	return ip;
+    }
+    
+    public void setIP(String ip){
+    	this.setIP(ip);
+    }
     
     
+    public String getPort(){
+    	return port;
+    }
+    
+    public void setPort(String Port){
+    	this.setPort(Port);
+    }
     
     
+    public String getSSHUname(){
+    	return sshuname;
+    }
+    
+    public void setSSHUname(String sshuname){
+    	this.setSSHUname(sshuname);
+    }
+    
+    
+    public String getSSHPass(){
+    	return sshpass;
+    }
+    
+    public void setSSHPass(String sshpass){
+    	this.setSSHPass(sshpass);
+    }
+    
+    
+    public String getTimeint(){
+    	return timeint;
+    }
+    
+    public void setTimeint(String timeint){
+    	this.setTimeint(timeint);
+    }
+    
+    
+    public Boolean getsV2cBttn(){
+    	return v2cbttn;
+    }
+    
+    public void setV2cBttn(String v2cbttn){
+    	this.setV2cBttn(v2cbttn);
+    }
+    
+    
+    public Boolean getV3Bttn(){
+    	return v3bttn;
+    }
+    
+    public void setV3Bttn(String v3bttn){
+    	this.setV3Bttn(v3bttn);
+    }
 }

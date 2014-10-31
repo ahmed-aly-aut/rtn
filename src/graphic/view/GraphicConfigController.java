@@ -60,7 +60,7 @@ public class GraphicConfigController {
     }
 
     public void confirmButton(){
-    	setGraphicApp(graphicApp);
+    	this.graphicApp.start1(null);
     }
     
 }
