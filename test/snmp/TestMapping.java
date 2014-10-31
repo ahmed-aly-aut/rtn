@@ -1,5 +1,6 @@
 package snmp;
 
+import net.percederberg.mibble.MibLoaderException;
 import org.junit.Before;
 import org.junit.Test;
 import snmp.exceptions.KeyNotFoundException;
@@ -23,7 +24,7 @@ public class TestMapping {
     @Before
     public void setup() {
         m = new Mapping();
-        m.load("APPLETALK-MIB"); // File must be in the res-folder
+        m.load("/res/NS-POLICY.mib"); // File must be in the res-folder
     }
 
     /**
@@ -32,7 +33,7 @@ public class TestMapping {
     @Test
     public void testgetOID() {
 
-        assertEquals(m.readOID("aarp"), "1.3.6.1.2.1.13.2");
+        assertEquals(m.readOID("nsPlyId"), "1.3.6.1.4.1.3224.10.1.1.1");
 
     }
 
@@ -42,7 +43,7 @@ public class TestMapping {
     @Test(expected = KeyNotFoundException.class)
     public void testgetOIDNoKey() {
 
-        assertEquals(m.readOID(""), "1.3.6.1.2.1.13.2");
+        assertEquals(m.readOID(""), "1.3.6.1.4.1.3224.10.1.1.1");
 
     }
 
@@ -53,8 +54,14 @@ public class TestMapping {
     @Test
     public void testIncorrectFilename() {
 
-        m.load("APPLETALMIB");
+        m.load("/res/NSPOLICY");
 
     }
+
+//    @Test(expected = MibLoaderException.class)
+//    public void testLoadMibLoaderException() {
+//        m.load("/res/NS-POLICY");
+//
+//    }
 
 }

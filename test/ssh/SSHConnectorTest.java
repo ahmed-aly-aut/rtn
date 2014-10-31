@@ -22,9 +22,9 @@ public class SSHConnectorTest {
     @Before
     public void setUp() {
         command = "cat test";
-        userName = "aaly";
-        password = "Aly1234";
-        connectionIP = "10.0.104.98";
+        userName = "5ahit";
+        password = "Waeng7ohch8o";
+        connectionIP = "10.0.100.10";
         connectionPort = 22;
         timeOutMilliseconds = 2000;
         knownHostsFileName = "/home/aaly/.ssh/known_hosts";

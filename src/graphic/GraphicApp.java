@@ -1,26 +1,10 @@
 package graphic;
 
 
-import graphic.model.Input;
-import graphic.view.GraphicOverviewController;
-
-import java.io.IOException;
-
 import commands.ActionCommand;
 import commands.GetTableCommand;
-
-import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.smi.Variable;
-
-import snmp.*;
-import snmp.exceptions.*;
-import ssh.SSHConnector;
-import ssh.SSHManager;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
+import graphic.model.Input;
+import graphic.view.GraphicOverviewController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,9 +13,20 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.Variable;
+import snmp.*;
+import snmp.exceptions.WrongAuthenticationException;
+import snmp.exceptions.WrongSnmpVersionException;
+import snmp.exceptions.WrongTransportProtocolException;
 
-/** The Main that runs every command of the graphic 
- * 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+/**
+ * The Main that runs every command of the graphic
  */
 public class GraphicApp extends Application {
 
@@ -39,17 +34,17 @@ public class GraphicApp extends Application {
     private BorderPane rootLayout;
     private ObservableList<Input> addInput = FXCollections.observableArrayList();
     private ObservableList<Input> addInput2 = FXCollections.observableArrayList();
-    
-    public GraphicApp(){
-    	for(int i = 0; i<10;i++){
-    		addInput.add(new Input("53"+i,"ANY", "Trust", "P46P"+i,"1","2","3","4","5","6"));
-    	}
-    	for(int j = 10; j<20;j++){
-    		addInput2.add(new Input("53"+j,"ANY", "Trust", "P46P"+j,"1","2","3","4","5","6"));
-    	}
+    private Vector<Vector<Variable>> v = null;
+
+    public GraphicApp() {
+
+        snmp();
     }
-    
-    
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
@@ -91,7 +86,7 @@ public class GraphicApp extends Application {
 
             // Set graphic overview into the center of root layout.
             rootLayout.setCenter(graphicOverview);
-            
+
             // Give the controller access to the main app.
             GraphicOverviewController controller = loader.getController();
             controller.setGraphicApp(this);
@@ -102,68 +97,55 @@ public class GraphicApp extends Application {
 
     /**
      * Returns the main stage.
+     *
      * @return
      */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
-    
-    public ObservableList<Input> getInput(){
-    	return addInput;
+
+    public ObservableList<Input> getInput() {
+        return addInput;
     }
-    
-    public ObservableList<Input> getInput2(){
-    	return addInput2;
+
+    public ObservableList<Input> getInput2() {
+        return addInput2;
     }
-    
-    public static void main(String[] args) {
-        launch(args);
-//        new GraphicApp().snmp();
+
+    public void snmp() {
+        SnmpManager snmp;
+        try {
+            Authentication authentication = new CommunityAuthentication("udp", "10.0.100.10", 161, "5xHIT", SnmpConstants.version2c, 6000, 3);
+            Mapping mapping = new Mapping();
+            mapping.load("/res/NS-POLICY.mib");
+            snmp = new SnmpV2c(authentication, mapping);
+            ActionCommand actionCommand = new ActionCommand(snmp);
+            List<String> l = new ArrayList<String>();
+            l.add("nsPlyId");
+            l.add("nsPlyName");
+            l.add("nsPlyServiceName");
+            l.add("nsPlyService");
+            l.add("nsPlySrcZone");
+            l.add("nsPlyDstZone");
+            l.add("nsPlySrcAddr");
+            l.add("nsPlyDstAddr");
+            l.add("nsPlyAction");
+            l.add("nsPlyActiveStatus");
+            GetTableCommand getTableCommand = new GetTableCommand(actionCommand, l);
+            Vector<Vector<Variable>> v = getTableCommand.execute();
+            for (int a = 0; a < v.get(0).size(); a++) {
+                addInput.add(new Input(v.get(0).get(a).toString(), v.get(1).get(a).toString(), v.get(2).get(a).toString(), v.get(3).get(a).toString(),
+                        v.get(4).get(a).toString(), v.get(5).get(a).toString(), v.get(6).get(a).toString(), v.get(7).get(a).toString(),
+                        v.get(8).get(a).toString(), v.get(9).get(a).toString()));
+            }
+        } catch (WrongTransportProtocolException e1) {
+            System.err.println(e1.getMessage());
+            e1.printStackTrace();
+        } catch (WrongAuthenticationException wrongAuthenticationException) {
+            wrongAuthenticationException.printStackTrace();
+        } catch (WrongSnmpVersionException wrongSnmpVersionException) {
+            wrongSnmpVersionException.printStackTrace();
+        }
     }
-    
-//    public void snmp() {
-//        SnmpManager snmp;
-//        try {
-//            Authentication authentication = new CommunityAuthentication("udp", "10.0.100.10", 161, "5xHIT", SnmpConstants.version2c, 6000, 3);
-//            Mapping mapping = new Mapping();
-//            //mapping.load("NETSCREEN-SMI.mib");
-//            mapping.load("NS-POLICY.mib");
-//            snmp = new SnmpV2c(authentication, mapping);
-//            ActionCommand actionCommand = new ActionCommand(snmp);
-//            List<String> l = new ArrayList<String>();
-//            l.add("nsPlyId");
-//            l.add("nsPlyServiceName");
-//            l.add("nsPlySrcZone");
-//            l.add("nsPlyName");
-//            GetTableCommand getTableCommand = new GetTableCommand(actionCommand, l);
-//            System.out.println(getTableCommand.execute());
-//            for (Vector<Variable> v : getTableCommand.execute())
-//                for (Variable v2 : v)
-//                    System.out.println(v2);
-////            for()
-//        } catch (WrongTransportProtocolException e1) {
-//            System.err.println(e1.getMessage());
-//            e1.printStackTrace();
-//        } catch (WrongAuthenticationException wrongAuthenticationException) {
-//            wrongAuthenticationException.printStackTrace();
-//        } catch (WrongSnmpVersionException wrongSnmpVersionException) {
-//            wrongSnmpVersionException.printStackTrace();
-//        }
-//    }
-//
-//    public void ssh() {
-//        SSHConnector connector = new SSHConnector("aaly", "Aly1234", "10.0.2.15",
-//                "/home/aaly/.ssh/known_hosts");
-//        SSHManager ssh = new SSHManager(connector);
-//        System.out.println("connected");
-//        System.out.println(ssh.sendCommand("cat test"));
-//        System.out.println("Connection closed");
-//    }
-//
-//    public void mibble() {
-//        Mapping mapping = new Mapping();
-//        //mapping.load("NETSCREEN-SMI.mib");
-//        mapping.load("NS-POLICY.mib");
-//        System.out.println(mapping.readOID("nsPlyId"));
-//    }
+
 }
