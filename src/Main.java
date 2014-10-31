@@ -36,7 +36,7 @@ public class Main {
             for (Vector<Variable> v : getTableCommand.execute())
                 for (Variable v2 : v)
                     System.out.println(v2);
-            for()
+//            for()
         } catch (WrongTransportProtocolException e1) {
             System.err.println(e1.getMessage());
             e1.printStackTrace();

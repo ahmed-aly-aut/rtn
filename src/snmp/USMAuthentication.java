@@ -49,7 +49,7 @@ public class USMAuthentication implements Authentication {
         this(transportProtocol, ipAddress, port, userName, password, securityLevel, securityName, snmpVersion, 6000, 3);
     }
 
-    @Override
+//    @Override
     public Target getTarget() {
         UserTarget target = new UserTarget();
         target.setAddress(address);
@@ -61,13 +61,13 @@ public class USMAuthentication implements Authentication {
         return target;
     }
 
-    @Override
+//    @Override
     public String getTransportProtocol() {
 
         return transportProtocol;
     }
 
-    @Override
+//    @Override
     public Address getAddress() {
         return address;
     }
@@ -76,7 +76,7 @@ public class USMAuthentication implements Authentication {
         return user;
     }
 
-    @Override
+//    @Override
     public int getSnmpVersion() {
         return snmpVersion;
     }

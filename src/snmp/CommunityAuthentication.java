@@ -39,7 +39,7 @@ public class CommunityAuthentication implements Authentication {
         this(transportProtocol, ipAddress, port, community, snmpVersion, 6000, 3);
     }
 
-    @Override
+//  @Override
     /**
      * This method returns a Target, which contains information about where the
      * data should be fetched and how.
@@ -55,17 +55,17 @@ public class CommunityAuthentication implements Authentication {
         target.setVersion(snmpVersion);
         return target;
     }
-
+//  @Override
     public String getTransportProtocol() {
         return transportProtocol;
     }
 
-    @Override
+//  @Override
     public Address getAddress() {
         return address;
     }
 
-    @Override
+//  @Override
     public int getSnmpVersion() {
         return snmpVersion;
     }

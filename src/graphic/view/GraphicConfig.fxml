@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="300.0" prefWidth="400.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <HBox layoutX="14.0" layoutY="9.0" prefHeight="27.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Label prefHeight="27.0" prefWidth="16.0" text="IP :">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="10.0" top="2.0" />
+               </HBox.margin>
+            </Label>
+            <TextField prefHeight="25.0" prefWidth="110.0">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="10.0" top="2.0" />
+               </HBox.margin>
+            </TextField>
+            <Label prefHeight="25.0" prefWidth="82.0" text="ssh-username :">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="30.0" top="2.0" />
+               </HBox.margin>
+            </Label>
+            <TextField prefHeight="25.0" prefWidth="109.0">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="10.0" top="2.0" />
+               </HBox.margin>
+            </TextField>
+         </children>
+      </HBox>
+      <HBox layoutX="12.0" layoutY="46.0" prefHeight="27.0" prefWidth="376.0" AnchorPane.leftAnchor="10.0">
+         <children>
+            <Label prefHeight="25.0" prefWidth="30.0" text="Port :">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="10.0" top="2.0" />
+               </HBox.margin>
+            </Label>
+            <TextField prefHeight="25.0" prefWidth="110.0">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="10.0" top="2.0" />
+               </HBox.margin>
+            </TextField>
+            <Label prefHeight="25.0" prefWidth="82.0" text="ssh-password :">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="20.0" top="2.0" />
+               </HBox.margin>
+            </Label>
+            <TextField prefHeight="25.0" prefWidth="109.0">
+               <HBox.margin>
+                  <Insets bottom="1.0" left="10.0" top="2.0" />
+               </HBox.margin>
+            </TextField>
+         </children>
+      </HBox>
+      <Label layoutX="14.0" layoutY="85.0" text="SNMP-Version :" AnchorPane.leftAnchor="20.0" />
+      <RadioButton layoutX="113.0" layoutY="85.0" mnemonicParsing="false" text="v2c" />
+      <RadioButton layoutX="113.0" layoutY="115.0" mnemonicParsing="false" text="v3" />
+      <Label layoutX="20.0" layoutY="163.0" text="Timeinterval :" AnchorPane.leftAnchor="20.0" />
+      <TextField layoutX="104.0" layoutY="159.0" prefHeight="25.0" prefWidth="110.0" />
+   </children>
+</AnchorPane>

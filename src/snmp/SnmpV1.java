@@ -222,7 +222,7 @@ public class SnmpV1 implements SnmpManager {
      *
      * @throws IOException - if an IO operation exception occurs while starting the listener.
      */
-    @Override
+//    @Override
     public void start() throws IOException {
         transport.listen();
     }
@@ -232,7 +232,7 @@ public class SnmpV1 implements SnmpManager {
      *
      * @throws IOException - if any IO operation for the close fails.
      */
-    @Override
+//    @Override
     public void stop() throws IOException {
         transport.close();
     }
