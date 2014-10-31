@@ -67,7 +67,8 @@ public class SSHConnector {
 
     public void connect() {
         try {
-            sessionConnection.connect(timeOut);
+//            sessionConnection.connect(timeOut);
+        	sessionConnection.connect();
         } catch (JSchException e) {
             logError(e.getMessage());
         }

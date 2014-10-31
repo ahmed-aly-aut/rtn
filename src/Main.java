@@ -1,7 +1,10 @@
 import commands.ActionCommand;
 import commands.GetTableCommand;
+import commands.SetPolicy;
+
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.Variable;
+
 import snmp.*;
 import snmp.exceptions.*;
 import ssh.SSHConnector;
@@ -13,7 +16,8 @@ import java.util.Vector;
 
 public class Main {
     public static void main(String[] args) {
-        new Main().snmp();
+//        new Main().snmp();
+    	new Main().setPolicy();
     }
 
 
@@ -61,5 +65,10 @@ public class Main {
         //mapping.load("NETSCREEN-SMI.mib");
         mapping.load("NS-POLICY.mib");
         System.out.println(mapping.readOID("nsPlyId"));
+    }
+    
+    public void setPolicy() {
+    	SetPolicy sp= new SetPolicy();
+    	sp.setPolicy();
     }
 }
