@@ -37,25 +37,6 @@
         <delete dir="${doc.dir}"/>
     </target>
 
-    <target name="test">
-        <mkdir dir="${reports.dir}"/>
-        <jacoco:coverage>
-            <junit haltonfailure="no" includeantruntime="true" logfailedtests="true" showoutput="true"
-                   printsummary="true" fork="true" forkmode="once">>
-                <classpath refid="project.classpath"/>
-
-                <formatter type="plain"/>
-                <formatter type="xml"/>
-
-                <batchtest fork="false" todir="${reports.dir}">
-                    <fileset dir="${test.dir}">
-                        <include name="**/*Test*.java"/>
-                    </fileset>
-                </batchtest>
-            </junit>
-        </jacoco:coverage>
-    </target>
-
     <target name="test" depends="compile">
 
         <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
