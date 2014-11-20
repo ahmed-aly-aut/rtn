@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="rtn" default="all" basedir="."  xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="rtn" default="all" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
 
     <property name="src.dir" value="src"/>
     <property name="doc.dir" value="doc"/>
@@ -7,6 +7,7 @@
     <property name="build.dir" value="bin"/>
     <property name="reports.dir" value="reports"/>
     <property name="lib.dir" value="lib"/>
+    <property name="reports.junit.xml.dir" value="${reports.dir}/junit"/>
 
     <path id="project.classpath">
         <pathelement location="${build.dir}"/>
@@ -16,6 +17,11 @@
         <pathelement location="lib/log4j-1.2.17.jar"/>
         <pathelement location="lib/mockito-all-1.9.5.jar"/>
         <pathelement location="lib/snmp4j-2.3.1.jar"/>
+        <pathelement location="lib/activation.jar"/>
+        <pathelement location="lib/mibble-mibs-2.9.3.jar"/>
+        <pathelement location="lib/mibble-parser-2.9.3.jar"/>
+        <pathelement location="lib/mail.jar"/>
+        <pathelement location="lib/commons-net-1.4.1.jar"/>
     </path>
 
     <target name="compile" description="Compile project.">
@@ -38,10 +44,10 @@
     </target>
 
     <target name="test" depends="compile">
-
+        <mkdir dir="${test.dir}"/>
         <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
             <classpath>
-                <path refid="classpath"/>
+                <path refid="project.classpath"/>
             </classpath>
         </taskdef>
 
@@ -53,13 +59,13 @@
         <!-- Run your unit tests, adding the JaCoCo agent -->
         <jacoco:coverage destfile="target/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
             <junit fork="yes" dir="${basedir}" failureProperty="test.failed">
-                <classpath location="${classes.dir}" />
-                <classpath refid="classpath" />
+                <classpath location="${build.dir}"/>
+                <classpath refid="project.classpath"/>
 
-                <formatter type="xml" />
+                <formatter type="xml"/>
                 <batchtest todir="${reports.junit.xml.dir}">
                     <fileset dir="${test.dir}">
-                        <include name="**/*Test.java" />
+                        <include name="**/*Test.java"/>
                     </fileset>
                 </batchtest>
             </junit>
@@ -67,8 +73,11 @@
 
     </target>
 
-    <target name="doc" depends="compile" description="generate documentation">
-        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
+    <target name="doc">
+        <mkdir dir="${doc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" version="true">
+        </javadoc>
+        <echo message="java doc has been generated!"/>
     </target>
 
     <target name="all" depends="clean, compile, doc, test"/>
