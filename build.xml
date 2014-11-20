@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="rtn" default="all" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<project name="rtn" default="all" basedir="." xmlns:jacoco="antlib:org.jacoco.ant"
+         xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
     <property name="src.dir" value="src"/>
     <property name="doc.dir" value="doc"/>
-    <property name="test.dir" value="test"/>
     <property name="build.dir" value="bin"/>
     <property name="reports.dir" value="reports"/>
     <property name="lib.dir" value="lib"/>
+    <property name="junit.dir" value="${reports.dir}/junit"/>
     <property name="exec.file" value="exec"/>
 
     <path id="project.classpath">
@@ -31,83 +32,111 @@
         </java>
     </target>
 
-    <target name="deploy-bundle">
-        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
-                 uri="javafx:com.sun.javafx.tools.ant"
-                 classpath="${java.home}\..\lib\ant-javafx.jar"/>
-
-        <fx:deploy width="600" height="400"
-                   verbose="true" nativeBundles="all"
-                   outdir="${build.dir}/bundle" outfile="samplejfx">
-            <fx:application name="samplejfx" mainClass="${javafx.main.class}"/>
-            <fx:resources>
-                <fx:fileset dir="${build.dir}" includes="samplejfx.jar"/>
-            </fx:resources>
-            <fx:info title="samplejfxtest" vendor="Retheesh"/>
-        </fx:deploy>
-    </target>
+    <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+             uri="javafx:com.sun.javafx.tools.ant"
+             classpath="${java.home}/lib/ant-javafx.jar"/>
 
     <target name="clean" description="Clean build products.">
         <delete dir="${build.dir}"/>
-        <delete dir="${test.dir}"/>
         <delete dir="${exec.file}"/>
         <delete dir="${reports.dir}"/>
         <delete dir="${doc.dir}"/>
+        <delete dir="${junit.dir}"/>
     </target>
 
     <!-- Step 1: Import JaCoCo Ant tasks -->
     <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-        <classpath path="${lib.dir}/jacocoant.jar" />
+        <classpath path="${lib.dir}/jacocoant.jar"/>
     </taskdef>
 
-    <target name="compile"  description="Compile project.">
-        <mkdir dir="${build.dir}" />
-        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="project.classpath" debug="true" includeantruntime="false" />
+    <target name="compile" description="Compile project.">
+        <mkdir dir="${build.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="project.classpath" debug="true"
+               includeantruntime="false"/>
     </target>
 
-    <target name="test" depends="compile">
+    <target name="testen" depends="compile">
         <!-- Step 2: Wrap test execution with the JaCoCo coverage task -->
         <jacoco:coverage destfile="${exec.file}">
             <java classname="Main" fork="true">
-                <classpath path="${build.dir}" />
+                <classpath path="${build.dir}"/>
             </java>
         </jacoco:coverage>
     </target>
 
-    <target name="report" depends="test">
+    <target name="test" description="run all junit tests" depends="compile">
+
+        <mkdir dir="${reports.dir}"/>
+        <jacoco:coverage>
+            <junit fork="true" printsummary="yes" haltonfailure="${haltonfailure}">
+                <classpath refid="project.classpath"/>
+                <formatter type="xml"/>
+                <batchtest fork="yes" todir="${reports.dir}">
+                    <fileset dir="${src.dir}">
+                        <include name="**/*Test.java"/>
+                    </fileset>
+                </batchtest>
+            </junit>
+        </jacoco:coverage>
+        <mkdir dir="${junit.dir}"/>
+        <junitreport todir="${junit.dir}">
+            <fileset dir="${junit.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report todir="${junit.dir}" format="frames"/>
+        </junitreport>
+    </target>
+
+    <target name="reporting" depends="testen">
         <!-- Step 3: Create coverage report -->
         <jacoco:report>
 
             <!-- This task needs the collected execution data and ... -->
             <executiondata>
-                <file file="${exec.file}" />
+                <file file="${exec.file}"/>
             </executiondata>
 
             <!-- the class files and optional source files ... -->
             <structure name="JaCoCo Ant Example">
                 <classfiles>
-                    <fileset dir="${build.dir}" />
+                    <fileset dir="${build.dir}"/>
                 </classfiles>
                 <sourcefiles encoding="UTF-8">
-                    <fileset dir="${src.dir}" />
+                    <fileset dir="${src.dir}"/>
                 </sourcefiles>
             </structure>
 
             <!-- to produce reports in different formats. -->
-            <html destdir="${reports.dir}" />
-            <csv destfile="${reports.dir}/report.csv" />
-            <xml destfile="${reports.dir}/report.xml" />
+            <html destdir="${reports.dir}"/>
+            <csv destfile="${reports.dir}/report.csv"/>
+            <xml destfile="${reports.dir}/report.xml"/>
         </jacoco:report>
     </target>
 
     <target name="doc">
         <mkdir dir="${doc.dir}"/>
-        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}" version="true">
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}">
+            <classpath refid="project.classpath"/>
         </javadoc>
         <echo message="java doc has been generated!"/>
     </target>
 
-    <target name="all" depends="clean, compile, test, report"/>
+    <target name="jar" description="jar file">
+
+        <fx:jar destfile="rtn.jar">
+            <fx:application mainClass="graphic.GraphicApp"/>
+            <fx:resources>
+                <fx:fileset dir="." includes="lib/*.jar"/>
+            </fx:resources>
+            <fileset dir="${build.dir}"/>
+            <manifest>
+
+            </manifest>
+        </fx:jar>
+        <echo message="jar created"/>
+    </target>
+
+    <target name="all" depends="clean, compile, doc, test"/>
 
     <target name="rebuild" depends="clean, compile" description="Clean and build products."/>
 
