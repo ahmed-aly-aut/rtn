@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SSHManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">ssh</a> &gt; <span class="el_source">SSHManager.java</span></div><h1>SSHManager.java</h1><pre class="source lang-java linenums">package ssh;
+
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.JSchException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ * Created by aaly on 09.10.14.
+ */
+public class SSHManager {
+<span class="nc" id="L16">    private static final Logger LOGGER = Logger.getLogger(SSHConnector.class</span>
+<span class="nc" id="L17">            .getName());</span>
+
+    private SSHConnector sshConnector;
+
+<span class="nc" id="L21">    public SSHManager(SSHConnector sshConnector) {</span>
+<span class="nc" id="L22">       this. sshConnector = sshConnector;</span>
+<span class="nc" id="L23">    }</span>
+
+    private String logWarning(String warnMessage) {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (warnMessage != null) {</span>
+<span class="nc" id="L27">            LOGGER.log(Level.WARNING, &quot;{0}:{1} - {2}&quot;, new Object[]{</span>
+<span class="nc" id="L28">                    sshConnector.getConnectionIP(), sshConnector.getConnectionPort(), warnMessage});</span>
+        }
+
+<span class="nc" id="L31">        return warnMessage;</span>
+    }
+
+    public String sendCommand(String command) {
+<span class="nc" id="L35">        sshConnector.connect();</span>
+<span class="nc" id="L36">        StringBuilder outputBuffer = new StringBuilder();</span>
+
+        try {
+<span class="nc" id="L39">            Channel channel = sshConnector.getSessionConnection().openChannel(&quot;exec&quot;);</span>
+<span class="nc" id="L40">            ((ChannelExec) channel).setCommand(command);</span>
+<span class="nc" id="L41">            channel.connect();</span>
+<span class="nc" id="L42">            InputStream commandOutput = channel.getInputStream();</span>
+<span class="nc" id="L43">            int readByte = commandOutput.read();</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            while (readByte != 0xffffffff) {</span>
+<span class="nc" id="L46">                outputBuffer.append((char) readByte);</span>
+<span class="nc" id="L47">                readByte = commandOutput.read();</span>
+            }
+<span class="nc" id="L49">            channel.disconnect();</span>
+<span class="nc" id="L50">        } catch (IOException ioX) {</span>
+<span class="nc" id="L51">            logWarning(ioX.getMessage());</span>
+<span class="nc" id="L52">            sshConnector.close();</span>
+<span class="nc" id="L53">            return null;</span>
+<span class="nc" id="L54">        } catch (JSchException jschX) {</span>
+<span class="nc" id="L55">            logWarning(jschX.getMessage());</span>
+<span class="nc" id="L56">            sshConnector.close();</span>
+<span class="nc" id="L57">            return null;</span>
+<span class="nc" id="L58">        }</span>
+<span class="nc" id="L59">        sshConnector.close();</span>
+<span class="nc" id="L60">        return outputBuffer.toString();</span>
+    }
+
+    public SSHConnector getSshConnector(){
+<span class="nc" id="L64">        return sshConnector;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Mail.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">events</a> &gt; <span class="el_source">Mail.java</span></div><h1>Mail.java</h1><pre class="source lang-java linenums">package events;
+
+/**
+ * Created by aaly on 27.10.14.
+ */
+
+import javax.activation.*;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.util.Date;
+import java.util.Properties;
+
+
+public class Mail extends javax.mail.Authenticator {
+    private String _user;
+    private String _pass;
+
+    private String[] _to;
+    private String _from;
+
+    private String _port;
+    private String _sport;
+
+    private String _host;
+
+    private String _subject;
+    private String _body;
+
+    private boolean _auth;
+
+    private boolean _debuggable;
+
+    private Multipart _multipart;
+
+
+<span class="nc" id="L39">    public Mail() {</span>
+<span class="nc" id="L40">        _host = &quot;localhost&quot;; // default smtp server</span>
+<span class="nc" id="L41">        _port = &quot;587&quot;; // default smtp port</span>
+<span class="nc" id="L42">        _sport = &quot;587&quot;; // default socketfactory port</span>
+
+<span class="nc" id="L44">        _user = &quot;aly.1st@hotmail.com&quot;; // username</span>
+<span class="nc" id="L45">        _pass = &quot;Aly1234&quot;; // password</span>
+<span class="nc" id="L46">        _from = &quot;notification@rtn.com&quot;; // email sent from</span>
+<span class="nc" id="L47">        _subject = &quot;Test&quot;; // email subject</span>
+<span class="nc" id="L48">        _body = &quot;Please note that this is an automatic message, which can't be answered. \n&quot; +</span>
+                &quot; Looks like the policy had changed.&quot;; // email body
+
+<span class="nc" id="L51">        _debuggable = false; // debug mode on or off - default off</span>
+<span class="nc" id="L52">        _auth = true; // smtp authentication - default on</span>
+
+<span class="nc" id="L54">        _multipart = new MimeMultipart();</span>
+<span class="nc" id="L55">        _to = new String[]{&quot;ahmed.aly@student.tgm.ac.at&quot;};</span>
+
+        // There is something wrong with MailCap, javamail can not find a handler for the multipart/mixed part, so this bit needs to be added.
+<span class="nc" id="L58">        MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();</span>
+<span class="nc" id="L59">        mc.addMailcap(&quot;text/html;; x-java-content-handler=com.sun.mail.handlers.text_html&quot;);</span>
+<span class="nc" id="L60">        mc.addMailcap(&quot;text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml&quot;);</span>
+<span class="nc" id="L61">        mc.addMailcap(&quot;text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain&quot;);</span>
+<span class="nc" id="L62">        mc.addMailcap(&quot;multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed&quot;);</span>
+<span class="nc" id="L63">        mc.addMailcap(&quot;message/rfc822;; x-java-content-handler=com.sun.mail.handlers.message_rfc822&quot;);</span>
+<span class="nc" id="L64">        CommandMap.setDefaultCommandMap(mc);</span>
+<span class="nc" id="L65">    }</span>
+
+    public Mail(String user, String pass) {
+<span class="nc" id="L68">        this();</span>
+
+<span class="nc" id="L70">        _user = user;</span>
+<span class="nc" id="L71">        _pass = pass;</span>
+<span class="nc" id="L72">    }</span>
+
+    public boolean send() throws Exception {
+<span class="nc" id="L75">        Properties props = _setProperties();</span>
+
+<span class="nc bnc" id="L77" title="All 12 branches missed.">        if (!_user.equals(&quot;&quot;) &amp;&amp; !_pass.equals(&quot;&quot;) &amp;&amp; _to.length &gt; 0 &amp;&amp; !_from.equals(&quot;&quot;) &amp;&amp; !_subject.equals(&quot;&quot;) &amp;&amp; !_body.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L78">            Session session = Session.getInstance(props, this);</span>
+
+<span class="nc" id="L80">            MimeMessage msg = new MimeMessage(session);</span>
+
+<span class="nc" id="L82">            msg.setFrom(new InternetAddress(_from));</span>
+
+<span class="nc" id="L84">            InternetAddress[] addressTo = new InternetAddress[_to.length];</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">            for (int i = 0; i &lt; _to.length; i++) {</span>
+<span class="nc" id="L86">                addressTo[i] = new InternetAddress(_to[i]);</span>
+            }
+<span class="nc" id="L88">            msg.setRecipients(MimeMessage.RecipientType.TO, addressTo);</span>
+
+<span class="nc" id="L90">            msg.setSubject(_subject);</span>
+<span class="nc" id="L91">            msg.setSentDate(new Date());</span>
+
+            // setup message body
+<span class="nc" id="L94">            BodyPart messageBodyPart = new MimeBodyPart();</span>
+<span class="nc" id="L95">            messageBodyPart.setText(_body);</span>
+<span class="nc" id="L96">            _multipart.addBodyPart(messageBodyPart);</span>
+
+            // Put parts in message
+<span class="nc" id="L99">            msg.setContent(_multipart);</span>
+
+            // send email
+<span class="nc" id="L102">            Transport.send(msg);</span>
+
+<span class="nc" id="L104">            return true;</span>
+        } else {
+<span class="nc" id="L106">            return false;</span>
+        }
+    }
+
+    public void addAttachment(String filename) throws Exception {
+<span class="nc" id="L111">        BodyPart messageBodyPart = new MimeBodyPart();</span>
+<span class="nc" id="L112">        DataSource source = new FileDataSource(filename);</span>
+<span class="nc" id="L113">        messageBodyPart.setDataHandler(new DataHandler(source));</span>
+<span class="nc" id="L114">        messageBodyPart.setFileName(filename);</span>
+
+<span class="nc" id="L116">        _multipart.addBodyPart(messageBodyPart);</span>
+<span class="nc" id="L117">    }</span>
+
+    @Override
+    public PasswordAuthentication getPasswordAuthentication() {
+<span class="nc" id="L121">        return new PasswordAuthentication(_user, _pass);</span>
+    }
+
+    private Properties _setProperties() {
+<span class="nc" id="L125">        Properties props = new Properties();</span>
+
+<span class="nc" id="L127">        props.put(&quot;mail.smtp.host&quot;, _host);</span>
+
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (_debuggable) {</span>
+<span class="nc" id="L130">            props.put(&quot;mail.debug&quot;, &quot;true&quot;);</span>
+        }
+
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (_auth) {</span>
+<span class="nc" id="L134">            props.put(&quot;mail.smtp.auth&quot;, &quot;true&quot;);</span>
+        }
+
+<span class="nc" id="L137">        props.put(&quot;mail.smtp.port&quot;, _port);</span>
+<span class="nc" id="L138">        props.put(&quot;mail.smtp.socketFactory.port&quot;, _sport);</span>
+        // props.put(&quot;mail.smtp.socketFactory.class&quot;, &quot;javax.net.ssl.SSLSocketFactory&quot;);
+//        props.put(&quot;mail.smtp.socketFactory.fallback&quot;, &quot;false&quot;);
+<span class="nc" id="L141">        props.put(&quot;mail.smtp.starttls.enable&quot;, &quot;true&quot;);</span>
+
+<span class="nc" id="L143">        return props;</span>
+    }
+
+    // the getters and setters
+    public String getBody() {
+<span class="nc" id="L148">        return _body;</span>
+    }
+
+    public void setBody(String _body) {
+<span class="nc" id="L152">        this._body = _body;</span>
+<span class="nc" id="L153">    }</span>
+
+    public String[] getTo() {
+<span class="nc" id="L156">        return _to;</span>
+    }
+
+    public void setTo(String[] _to) {
+<span class="nc" id="L160">        this._to = _to;</span>
+<span class="nc" id="L161">    }</span>
+
+    public String getFrom() {
+<span class="nc" id="L164">        return _from;</span>
+    }
+
+    public void setFrom(String _from) {
+<span class="nc" id="L168">        this._from = _from;</span>
+<span class="nc" id="L169">    }</span>
+
+    public String getSubject() {
+<span class="nc" id="L172">        return _subject;</span>
+    }
+
+    public void setSubject(String _subject) {
+<span class="nc" id="L176">        this._subject = _subject;</span>
+<span class="nc" id="L177">    }</span>
+    // more of the getters and setters …..
+
+    public static void main(String[] args) throws Exception {
+<span class="nc" id="L181">        new Mail().send();</span>
+<span class="nc" id="L182">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="rtn" default="all" basedir="." xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="rtn" default="all" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:fx="javafx:com.sun.javafx.tools.ant">
 
     <property name="src.dir" value="src"/>
     <property name="doc.dir" value="doc"/>
@@ -7,7 +7,7 @@
     <property name="build.dir" value="bin"/>
     <property name="reports.dir" value="reports"/>
     <property name="lib.dir" value="lib"/>
-    <property name="reports.junit.xml.dir" value="${reports.dir}/junit"/>
+    <property name="exec.file" value="exec"/>
 
     <path id="project.classpath">
         <pathelement location="${build.dir}"/>
@@ -24,12 +24,6 @@
         <pathelement location="lib/commons-net-1.4.1.jar"/>
     </path>
 
-    <target name="compile" description="Compile project.">
-        <mkdir dir="${build.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="project.classpath" debug="true"
-               deprecation="true" includeantruntime="false"/>
-    </target>
-
     <target name="run" depends="compile" description="Run TrapReceiver">
         <java classname="graphic.GraphicApp" fork="true" classpathref="project.classpath">
             <sysproperty value="java.policy" key="java.security.policy">
@@ -37,40 +31,73 @@
         </java>
     </target>
 
+    <target name="deploy-bundle">
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+                 uri="javafx:com.sun.javafx.tools.ant"
+                 classpath="${java.home}\..\lib\ant-javafx.jar"/>
+
+        <fx:deploy width="600" height="400"
+                   verbose="true" nativeBundles="all"
+                   outdir="${build.dir}/bundle" outfile="samplejfx">
+            <fx:application name="samplejfx" mainClass="${javafx.main.class}"/>
+            <fx:resources>
+                <fx:fileset dir="${build.dir}" includes="samplejfx.jar"/>
+            </fx:resources>
+            <fx:info title="samplejfxtest" vendor="Retheesh"/>
+        </fx:deploy>
+    </target>
+
     <target name="clean" description="Clean build products.">
         <delete dir="${build.dir}"/>
+        <delete dir="${test.dir}"/>
+        <delete dir="${exec.file}"/>
         <delete dir="${reports.dir}"/>
         <delete dir="${doc.dir}"/>
     </target>
 
+    <!-- Step 1: Import JaCoCo Ant tasks -->
+    <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+        <classpath path="${lib.dir}/jacocoant.jar" />
+    </taskdef>
+
+    <target name="compile"  description="Compile project.">
+        <mkdir dir="${build.dir}" />
+        <javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="project.classpath" debug="true" includeantruntime="false" />
+    </target>
+
     <target name="test" depends="compile">
-        <mkdir dir="${test.dir}"/>
-        <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-            <classpath>
-                <path refid="project.classpath"/>
-            </classpath>
-        </taskdef>
-
-        <!-- Import the JaCoCo Ant Task -->
-        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-            <classpath path="${lib.dir}/jacocoant.jar"/>
-        </taskdef>
-
-        <!-- Run your unit tests, adding the JaCoCo agent -->
-        <jacoco:coverage destfile="target/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
-            <junit fork="yes" dir="${basedir}" failureProperty="test.failed">
-                <classpath location="${build.dir}"/>
-                <classpath refid="project.classpath"/>
-
-                <formatter type="xml"/>
-                <batchtest todir="${reports.junit.xml.dir}">
-                    <fileset dir="${test.dir}">
-                        <include name="**/*Test.java"/>
-                    </fileset>
-                </batchtest>
-            </junit>
+        <!-- Step 2: Wrap test execution with the JaCoCo coverage task -->
+        <jacoco:coverage destfile="${exec.file}">
+            <java classname="Main" fork="true">
+                <classpath path="${build.dir}" />
+            </java>
         </jacoco:coverage>
+    </target>
 
+    <target name="report" depends="test">
+        <!-- Step 3: Create coverage report -->
+        <jacoco:report>
+
+            <!-- This task needs the collected execution data and ... -->
+            <executiondata>
+                <file file="${exec.file}" />
+            </executiondata>
+
+            <!-- the class files and optional source files ... -->
+            <structure name="JaCoCo Ant Example">
+                <classfiles>
+                    <fileset dir="${build.dir}" />
+                </classfiles>
+                <sourcefiles encoding="UTF-8">
+                    <fileset dir="${src.dir}" />
+                </sourcefiles>
+            </structure>
+
+            <!-- to produce reports in different formats. -->
+            <html destdir="${reports.dir}" />
+            <csv destfile="${reports.dir}/report.csv" />
+            <xml destfile="${reports.dir}/report.xml" />
+        </jacoco:report>
     </target>
 
     <target name="doc">
@@ -80,7 +107,7 @@
         <echo message="java doc has been generated!"/>
     </target>
 
-    <target name="all" depends="clean, compile, doc, test"/>
+    <target name="all" depends="clean, compile, test, report"/>
 
     <target name="rebuild" depends="clean, compile" description="Clean and build products."/>
 

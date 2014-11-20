@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SetPolicy.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">commands</a> &gt; <span class="el_source">SetPolicy.java</span></div><h1>SetPolicy.java</h1><pre class="source lang-java linenums">package commands;
+
+import ssh.SSHConnector;
+import ssh.SSHManager;
+import content.Base;
+
+/**
+ * A Class to set the policies on the router
+ * @author Helmuth Brunner
+ * @version Oct 31, 2014
+ * Current project: RTN
+ */
+public class SetPolicy {
+
+<span class="nc" id="L15">	private Base base= Base.get();</span>
+	private SSHConnector connector;
+	private SSHManager manager; 
+	
+<span class="nc" id="L19">	public SetPolicy() {</span>
+		
+		// String userName, String password, String connectionIP, String knownHostsFileName, int connectionPort, int timeOut
+		
+<span class="nc" id="L23">		connector= new SSHConnector(base.getSettingString(&quot;username&quot;), base.getSettingString(&quot;password&quot;), base.getSettingString(&quot;ip&quot;), base.getSettingString(&quot;pathto&quot;));</span>
+
+<span class="nc" id="L25">		manager = new SSHManager(connector);</span>
+<span class="nc" id="L26">	}</span>
+	
+	public void setPolicy() {
+		
+<span class="nc" id="L30">		System.out.println(&quot;SetPolicy&quot;);</span>
+<span class="nc" id="L31">		System.out.println( manager.sendCommand(&quot;set policy&quot;) );</span>
+		// use the command &quot;get policy&quot; to list all policies
+		
+<span class="nc" id="L34">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

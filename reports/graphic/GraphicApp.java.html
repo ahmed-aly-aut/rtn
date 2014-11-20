@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GraphicApp.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">graphic</a> &gt; <span class="el_source">GraphicApp.java</span></div><h1>GraphicApp.java</h1><pre class="source lang-java linenums">package graphic;
+
+
+import commands.ActionCommand;
+import commands.GetTableCommand;
+import graphic.model.Input;
+import graphic.view.GraphicOverviewController;
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.Variable;
+import snmp.*;
+import snmp.exceptions.WrongAuthenticationException;
+import snmp.exceptions.WrongSnmpVersionException;
+import snmp.exceptions.WrongTransportProtocolException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+/**
+ * The Main that runs every command of the graphic
+ */
+public class GraphicApp extends Application {
+
+    public Stage primaryStage;
+    private AnchorPane configLayout;
+    private BorderPane rootLayout;
+<span class="nc" id="L36">    private ObservableList&lt;Input&gt; addInput = FXCollections.observableArrayList();</span>
+<span class="nc" id="L37">    private ObservableList&lt;Input&gt; addInput2 = FXCollections.observableArrayList();</span>
+<span class="nc" id="L38">    private Vector&lt;Vector&lt;Variable&gt;&gt; v = null;</span>
+
+<span class="nc" id="L40">    public GraphicApp() {</span>
+
+<span class="nc" id="L42">        snmp();</span>
+<span class="nc" id="L43">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L46">        launch(args);</span>
+<span class="nc" id="L47">    }</span>
+
+    @Override
+    public void start(Stage primaryStage) {
+<span class="nc" id="L51">        this.primaryStage = primaryStage;</span>
+<span class="nc" id="L52">        this.primaryStage.setTitle(&quot;Graphical User Interface&quot;);</span>
+    
+<span class="nc" id="L54">        initRootLayout();</span>
+        
+<span class="nc" id="L56">        showGraphicOverview();</span>
+<span class="nc" id="L57">    }</span>
+    
+    /**
+     * Initializes the root layout.
+     */
+    public void initRootLayout() {
+        try {
+            // Load root layout from fxml file.
+<span class="nc" id="L65">            FXMLLoader loader = new FXMLLoader();</span>
+<span class="nc" id="L66">            loader.setLocation(GraphicApp.class.getResource(&quot;view/GraphicRoot.fxml&quot;));</span>
+<span class="nc" id="L67">            rootLayout = (BorderPane) loader.load();</span>
+
+            // Show the scene containing the root layout.
+<span class="nc" id="L70">            Scene scene = new Scene(rootLayout);</span>
+<span class="nc" id="L71">            primaryStage.setScene(scene);</span>
+<span class="nc" id="L72">            primaryStage.show();</span>
+<span class="nc" id="L73">        } catch (IOException e) {</span>
+<span class="nc" id="L74">            e.printStackTrace();</span>
+<span class="nc" id="L75">        }</span>
+<span class="nc" id="L76">    }</span>
+
+    /**
+     * Shows the graphic overview inside the root layout.
+     */
+    public void showGraphicOverview() {
+        try {
+            // Load graphic overview.
+<span class="nc" id="L84">            FXMLLoader loader = new FXMLLoader();</span>
+<span class="nc" id="L85">            loader.setLocation(GraphicApp.class.getResource(&quot;view/GraphicOverview.fxml&quot;));</span>
+<span class="nc" id="L86">            AnchorPane graphicOverview = (AnchorPane) loader.load();</span>
+
+            // Set graphic overview into the center of root layout.
+<span class="nc" id="L89">            rootLayout.setCenter(graphicOverview);</span>
+
+            // Give the controller access to the main app.
+<span class="nc" id="L92">            GraphicOverviewController controller = loader.getController();</span>
+<span class="nc" id="L93">            controller.setGraphicApp(this);</span>
+<span class="nc" id="L94">        } catch (IOException e) {</span>
+<span class="nc" id="L95">            e.printStackTrace();</span>
+<span class="nc" id="L96">        }</span>
+<span class="nc" id="L97">    }</span>
+    
+    public void showGraphicConfig(){
+    	 try {
+             // Load root layout from fxml file.
+<span class="nc" id="L102">             FXMLLoader loader = new FXMLLoader();</span>
+<span class="nc" id="L103">             loader.setLocation(GraphicApp.class.getResource(&quot;view/GraphicConfig.fxml&quot;));</span>
+<span class="nc" id="L104">             configLayout = (AnchorPane) loader.load();</span>
+
+             // Show the scene containing the root layout.
+<span class="nc" id="L107">             Scene scene = new Scene(configLayout);</span>
+<span class="nc" id="L108">             primaryStage.setScene(scene);</span>
+<span class="nc" id="L109">             primaryStage.show();</span>
+<span class="nc" id="L110">         } catch (IOException e) {</span>
+<span class="nc" id="L111">             e.printStackTrace();</span>
+<span class="nc" id="L112">         }</span>
+<span class="nc" id="L113">    }</span>
+    
+    /**
+     * Returns the main stage.
+     *
+     * @return
+     */
+    public Stage getPrimaryStage() {
+<span class="nc" id="L121">        return primaryStage;</span>
+    }
+
+    public ObservableList&lt;Input&gt; getInput() {
+<span class="nc" id="L125">        return addInput;</span>
+    }
+
+    public ObservableList&lt;Input&gt; getInput2() {
+<span class="nc" id="L129">        return addInput2;</span>
+    }
+
+    public void snmp() {
+        SnmpManager snmp;
+        try {
+<span class="nc" id="L135">            Authentication authentication = new CommunityAuthentication(&quot;udp&quot;, &quot;10.0.100.10&quot;, 161, &quot;5xHIT&quot;, SnmpConstants.version2c, 6000, 3);</span>
+<span class="nc" id="L136">            Mapping mapping = new Mapping();</span>
+<span class="nc" id="L137">            mapping.load(&quot;/res/NS-POLICY.mib&quot;);</span>
+<span class="nc" id="L138">            snmp = new SnmpV2c(authentication, mapping);</span>
+<span class="nc" id="L139">            ActionCommand actionCommand = new ActionCommand(snmp);</span>
+<span class="nc" id="L140">            List&lt;String&gt; l = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L141">            l.add(&quot;nsPlyId&quot;);</span>
+<span class="nc" id="L142">            l.add(&quot;nsPlyName&quot;);</span>
+<span class="nc" id="L143">            l.add(&quot;nsPlyServiceName&quot;);</span>
+<span class="nc" id="L144">            l.add(&quot;nsPlyService&quot;);</span>
+<span class="nc" id="L145">            l.add(&quot;nsPlySrcZone&quot;);</span>
+<span class="nc" id="L146">            l.add(&quot;nsPlyDstZone&quot;);</span>
+<span class="nc" id="L147">            l.add(&quot;nsPlySrcAddr&quot;);</span>
+<span class="nc" id="L148">            l.add(&quot;nsPlyDstAddr&quot;);</span>
+<span class="nc" id="L149">            l.add(&quot;nsPlyAction&quot;);</span>
+<span class="nc" id="L150">            l.add(&quot;nsPlyActiveStatus&quot;);</span>
+<span class="nc" id="L151">            GetTableCommand getTableCommand = new GetTableCommand(actionCommand, l);</span>
+<span class="nc" id="L152">            Vector&lt;Vector&lt;Variable&gt;&gt; v = getTableCommand.execute();</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">            for (int a = 0; a &lt; v.get(0).size(); a++) {</span>
+<span class="nc" id="L154">                addInput.add(new Input(v.get(0).get(a).toString(), v.get(1).get(a).toString(), v.get(2).get(a).toString(), v.get(3).get(a).toString(),</span>
+<span class="nc" id="L155">                        v.get(4).get(a).toString(), v.get(5).get(a).toString(), v.get(6).get(a).toString(), v.get(7).get(a).toString(),</span>
+<span class="nc" id="L156">                        v.get(8).get(a).toString(), v.get(9).get(a).toString()));</span>
+            }
+<span class="nc" id="L158">        } catch (WrongTransportProtocolException e1) {</span>
+<span class="nc" id="L159">            System.err.println(e1.getMessage());</span>
+<span class="nc" id="L160">            e1.printStackTrace();</span>
+<span class="nc" id="L161">        } catch (WrongAuthenticationException wrongAuthenticationException) {</span>
+<span class="nc" id="L162">            wrongAuthenticationException.printStackTrace();</span>
+<span class="nc" id="L163">        } catch (WrongSnmpVersionException wrongSnmpVersionException) {</span>
+<span class="nc" id="L164">            wrongSnmpVersionException.printStackTrace();</span>
+<span class="nc" id="L165">        }</span>
+<span class="nc" id="L166">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SnmpV1.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">snmp</a> &gt; <span class="el_source">SnmpV1.java</span></div><h1>SnmpV1.java</h1><pre class="source lang-java linenums">package snmp;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.snmp4j.PDU;
+import org.snmp4j.Snmp;
+import org.snmp4j.TransportMapping;
+import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.smi.Address;
+import org.snmp4j.smi.OID;
+import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.transport.DefaultTcpTransportMapping;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.util.DefaultPDUFactory;
+import org.snmp4j.util.TreeEvent;
+import org.snmp4j.util.TreeUtils;
+import snmp.exceptions.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
+
+/**
+ *
+ */
+public class SnmpV1 implements SnmpManager {
+    private Snmp snmp;
+    private TransportMapping&lt;? extends Address&gt; transport;
+    private Authentication authentication;
+    private Mapping mapping;
+
+    /**
+     * @param authentication
+     * @param mapping
+     * @throws WrongTransportProtocolException
+     * @throws WrongAuthenticationException
+     * @throws WrongSnmpVersionException
+     */
+<span class="nc" id="L42">    public SnmpV1(Authentication authentication, Mapping mapping) throws WrongTransportProtocolException, WrongAuthenticationException, WrongSnmpVersionException {</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (authentication instanceof CommunityAuthentication) {</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">            if (authentication.getSnmpVersion() != SnmpConstants.version1)</span>
+<span class="nc" id="L45">                throw new WrongSnmpVersionException(&quot;Should be version 1&quot;);</span>
+<span class="nc" id="L46">            this.authentication = authentication;</span>
+<span class="nc" id="L47">            this.mapping = mapping;</span>
+            try {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">                if (authentication.getTransportProtocol().equalsIgnoreCase(&quot;UDP&quot;)) {</span>
+<span class="nc" id="L50">                    transport = new DefaultUdpTransportMapping();</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                } else if (authentication.getTransportProtocol().equalsIgnoreCase(&quot;TCP&quot;)) {</span>
+<span class="nc" id="L52">                    transport = new DefaultTcpTransportMapping();</span>
+                } else {
+<span class="nc" id="L54">                    throw new WrongTransportProtocolException();</span>
+                }
+<span class="nc" id="L56">            } catch (IOException e) {</span>
+<span class="nc" id="L57">                System.err.println(&quot;ERROR: Socket binding failed!&quot;);</span>
+<span class="nc" id="L58">                e.printStackTrace();</span>
+<span class="nc" id="L59">            }</span>
+<span class="nc" id="L60">            snmp = new Snmp(transport);</span>
+        } else
+<span class="nc" id="L62">            throw new WrongAuthenticationException(&quot;CommunityAuthentication has to be used!&quot;);</span>
+<span class="nc" id="L63">    }</span>
+
+    /**
+     * The method getAsString(Oid oid) is using the @see SnmpManager#get to get a String value of the specified OID.
+     *
+     * @param oid - the requested OID
+     * @return a String with the result from the specified OID
+     * @throws SNMPTimeOutException - will be thrown if a timeout with request happens
+     * @throws PDURequestFailedException - will be thrown if an error occurs within the request
+     */
+    public String getAsString(OID oid) throws SNMPTimeOutException,
+            PDURequestFailedException, OIDDoesNotExistsException {
+        // extract the response PDU (could be null if timed out)
+<span class="nc" id="L76">        VariableBinding ret = (VariableBinding) get(new OID[]{oid}).get(0);</span>
+<span class="nc" id="L77">        String response = ret.getVariable().toString();</span>
+<span class="nc" id="L78">        return response;</span>
+    }
+
+    /**
+     * The method get can be specified with an Array of requested OIDs. A Vector with elements of the subclass VariableBinding will be returned.
+     * OID requested from the method GET can only return a value. Therefore the OIDd must be a scalar and not a branch.
+     *
+     * @param oids - the requested OIDs
+     * @return - a Vector with VariableBindings
+     * @throws SNMPTimeOutException - will be thrown if a timeout with request happens
+     * @throws PDURequestFailedException - will be thrown if an error occurs within the request
+     * @see org.snmp4j.smi.VariableBinding
+     */
+    public Vector&lt;? extends VariableBinding&gt; get(OID[] oids)
+            throws SNMPTimeOutException, PDURequestFailedException {
+<span class="nc" id="L93">        ResponseEvent responseEvent = null;</span>
+<span class="nc" id="L94">        Vector&lt;? extends VariableBinding&gt; vbs = null;</span>
+        try {
+            // send the PDU
+<span class="nc" id="L97">            responseEvent = snmp.send(createPDU(PDU.GET, oids), authentication.getTarget());</span>
+<span class="nc" id="L98">            Logger.getLogger(SnmpManager.class.getName()).log(Level.INFO,</span>
+<span class="nc" id="L99">                    responseEvent.toString());</span>
+<span class="nc" id="L100">        } catch (IOException e) {</span>
+            // TODO Auto-generated catch block
+<span class="nc" id="L102">            e.printStackTrace();</span>
+<span class="nc" id="L103">        }</span>
+        // extract the response PDU (could be null if timed out)
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (responseEvent != null) {</span>
+<span class="nc" id="L106">            PDU responsePDU = responseEvent.getResponse();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            if (checkResponsePDU(responsePDU))</span>
+<span class="nc" id="L108">                vbs = responsePDU.getVariableBindings();</span>
+<span class="nc" id="L109">        } else {</span>
+<span class="nc" id="L110">            throw new SNMPTimeOutException();</span>
+        }
+
+<span class="nc" id="L113">        return vbs;</span>
+    }
+
+    /**
+     * This method creates the requst and puts it in an PDU object. This object will be returnd and used from Methods such as get,walk and getnext.
+     *
+     * @param type - the type of the response, possible are PDU.GET,PDU.GETNEXT, PDU.GETBULK
+     * @param oids - the requested OIDs
+     * @return - the request PDU
+     * @see org.snmp4j.PDU
+     */
+    public PDU createPDU(int type, OID[] oids) {
+        // create the PDU
+<span class="nc" id="L126">        PDU requestPDU = new PDU();</span>
+<span class="nc" id="L127">        requestPDU.setType(type);</span>
+        // put the oid you want to get
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        for (OID oid : oids) {</span>
+<span class="nc" id="L130">            requestPDU.add(new VariableBinding(oid));</span>
+        }
+<span class="nc" id="L132">        return requestPDU;</span>
+    }
+
+    /**
+     * @param oids
+     * @return
+     * @throws SNMPTimeOutException
+     * @throws PDURequestFailedException
+     */
+    public Vector&lt;? extends VariableBinding&gt; getNext(OID[] oids)
+            throws SNMPTimeOutException, PDURequestFailedException {
+<span class="nc" id="L143">        ResponseEvent responseEvent = null;</span>
+<span class="nc" id="L144">        Vector&lt;? extends VariableBinding&gt; vbs = null;</span>
+        try {
+
+
+            // send the PDU
+<span class="nc" id="L149">            responseEvent = snmp.send(createPDU(PDU.GETNEXT, oids), authentication.getTarget());</span>
+<span class="nc" id="L150">            Logger.getLogger(SnmpManager.class.getName()).log(Level.INFO,</span>
+<span class="nc" id="L151">                    responseEvent.toString());</span>
+<span class="nc" id="L152">        } catch (IOException e) {</span>
+            // TODO Auto-generated catch block
+<span class="nc" id="L154">            e.printStackTrace();</span>
+<span class="nc" id="L155">        }</span>
+        // extract the response PDU (could be null if timed out)
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        if (responseEvent != null) {</span>
+<span class="nc" id="L158">            PDU responsePDU = responseEvent.getResponse();</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">            if (checkResponsePDU(responsePDU))</span>
+<span class="nc" id="L160">                vbs = responsePDU.getVariableBindings();</span>
+<span class="nc" id="L161">        } else {</span>
+<span class="nc" id="L162">            throw new SNMPTimeOutException();</span>
+        }
+<span class="nc" id="L164">        return vbs;</span>
+    }
+
+    /**
+     * This method returns true or false, which depend on the response PDU.
+     * If the response PDU is not null and don't have an error, true will be returned.
+     *
+     * @param responsePDU - the responsePDU, which will be checked for errors.
+     * @return - true if no error was invoked else false.
+     * @throws PDURequestFailedException - If an error occurred in the response PDU.
+     * @throws SNMPTimeOutException      - If a timeout occured
+     * @see org.snmp4j.PDU
+     */
+    public boolean checkResponsePDU(PDU responsePDU)
+            throws PDURequestFailedException, SNMPTimeOutException {
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        if (responsePDU != null)</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            if (responsePDU.getErrorStatus() == PDU.noError)</span>
+<span class="nc" id="L181">                return true;</span>
+            else
+<span class="nc" id="L183">                throw new PDURequestFailedException(responsePDU);</span>
+        else
+<span class="nc" id="L185">            throw new SNMPTimeOutException(&quot;Timeout: No Response from &quot;</span>
+<span class="nc" id="L186">                    + authentication.getAddress());</span>
+    }
+
+    /**
+     * This method needs a valid root OID to return a VariableBinding list with the sub entities.
+     *
+     * @param rootID - The root OID
+     * @return - a list containing VariableBinding
+     */
+    public List&lt;VariableBinding&gt; getSubtree(OID rootID) throws TreeEventException {
+<span class="nc" id="L196">        TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory());</span>
+<span class="nc" id="L197">        treeUtils.setMaxRepetitions(Integer.MAX_VALUE);</span>
+<span class="nc" id="L198">        List&lt;TreeEvent&gt; events = treeUtils.getSubtree(authentication.getTarget(), rootID);</span>
+
+        // Get snmpwalk result.
+<span class="nc" id="L201">        List&lt;VariableBinding&gt; varBindings = new ArrayList&lt;VariableBinding&gt;();</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        for (TreeEvent event : events) {</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (event != null) {</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">                if (event.isError())</span>
+<span class="nc" id="L205">                    throw new TreeEventException(&quot;oid [&quot; + rootID + &quot;] &quot; + event.getErrorMessage());</span>
+<span class="nc" id="L206">                Collections.addAll(varBindings, event.getVariableBindings());</span>
+            }
+<span class="nc" id="L208">        }</span>
+<span class="nc" id="L209">        return varBindings;</span>
+    }
+
+    /**
+     * @return - the mapping Object
+     */
+    public Mapping getMapping() {
+<span class="nc" id="L216">        return mapping;</span>
+    }
+
+    /**
+     * This method has to be invoked before sending the message.
+     * It listens for incoming messages.
+     *
+     * @throws IOException - if an IO operation exception occurs while starting the listener.
+     */
+//    @Override
+    public void start() throws IOException {
+<span class="nc" id="L227">        transport.listen();</span>
+<span class="nc" id="L228">    }</span>
+
+    /**
+     * Stops the thread, which is listening for the incoming messages and releases all bound resources synchronously.
+     *
+     * @throws IOException - if any IO operation for the close fails.
+     */
+//    @Override
+    public void stop() throws IOException {
+<span class="nc" id="L237">        transport.close();</span>
+<span class="nc" id="L238">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

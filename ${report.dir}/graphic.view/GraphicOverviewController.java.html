@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GraphicOverviewController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">graphic.view</a> &gt; <span class="el_source">GraphicOverviewController.java</span></div><h1>GraphicOverviewController.java</h1><pre class="source lang-java linenums">package graphic.view;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import graphic.GraphicApp;
+import graphic.model.Input;
+
+public class GraphicOverviewController {
+    @FXML
+    private TableView&lt;Input&gt; inputTable;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyIDColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyNameColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyServiceColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyServiceNameColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plySrcZoneColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyDstZoneColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plySrcAddrColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyDstAddrColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyActionColumn;
+    @FXML
+    private TableColumn&lt;Input, String&gt; plyActiveStatusColumn;
+    
+    
+
+    // Reference to the main application.
+    private GraphicApp graphicApp;
+
+    /**
+     * The constructor.
+     * The constructor is called before the initialize() method.
+     */
+<span class="nc" id="L43">    public GraphicOverviewController() {</span>
+<span class="nc" id="L44">    }</span>
+
+    /**
+     * Initializes the controller class. This method is automatically called
+     * after the fxml file has been loaded.
+     */
+    @FXML
+    private void initialize() {
+        // Initialize the table with the two columns.
+<span class="nc" id="L53">        plyIDColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyIDProperty());</span>
+<span class="nc" id="L54">        plyNameColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyNameProperty());</span>
+<span class="nc" id="L55">        plyServiceColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyServiceProperty());</span>
+<span class="nc" id="L56">        plyServiceNameColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyServiceNameProperty());</span>
+<span class="nc" id="L57">        plySrcZoneColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plySrcZoneProperty());</span>
+<span class="nc" id="L58">        plyDstZoneColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyDstZoneProperty());</span>
+<span class="nc" id="L59">        plySrcAddrColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plySrcAddrProperty());</span>
+<span class="nc" id="L60">        plyDstAddrColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyDstAddrProperty());</span>
+<span class="nc" id="L61">        plyActionColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyActionProperty());</span>
+<span class="nc" id="L62">        plyActiveStatusColumn.setCellValueFactory(cellData -&gt; cellData.getValue().plyActiveStatusProperty());</span>
+<span class="nc" id="L63">    }</span>
+
+    /**
+     * Is called by the main application to give a reference back to itself.
+     * 
+     * @param graphicApp
+     */
+    public void setGraphicApp(GraphicApp graphicApp) {
+<span class="nc" id="L71">        this.graphicApp = graphicApp;</span>
+
+        // Add observable list data to the table
+<span class="nc" id="L74">        inputTable.setItems(graphicApp.getInput());</span>
+<span class="nc" id="L75">    }</span>
+    
+    public void refreshButton(){
+<span class="nc" id="L78">    	inputTable.getColumns().get(0).setVisible(false);</span>
+<span class="nc" id="L79">    	inputTable.getColumns().get(0).setVisible(true);</span>
+<span class="nc" id="L80">    	inputTable.setItems(graphicApp.getInput());</span>
+<span class="nc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

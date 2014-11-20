@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TelnetClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">telnet</a> &gt; <span class="el_source">TelnetClient.java</span></div><h1>TelnetClient.java</h1><pre class="source lang-java linenums">package telnet;
+
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the &quot;License&quot;); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.apache.commons.net.telnet.*;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.StringTokenizer;
+
+
+/**
+ * This is a simple example of use of TelnetClient.
+ * An external option handler (SimpleTelnetOptionHandler) is used.
+ * Initial configuration requested by TelnetClient will be:
+ * WILL ECHO, WILL SUPPRESS-GA, DO SUPPRESS-GA.
+ * VT100 terminal type will be subnegotiated.
+ * &lt;p/&gt;
+ * Also, use of the sendAYT(), getLocalOptionState(), getRemoteOptionState()
+ * is demonstrated.
+ * When connected, type AYT to send an AYT command to the server and see
+ * the result.
+ * Type OPT to see a report of the state of the first 25 options.
+ * &lt;p/&gt;
+ *
+ * @author Bruno D'Avanzo
+ *         *
+ */
+<span class="nc" id="L46">public class TelnetClient implements Runnable, TelnetNotificationHandler {</span>
+<span class="nc" id="L47">    static org.apache.commons.net.telnet.TelnetClient tc = null;</span>
+
+    /**
+     * Main for the TelnetClientExample.
+     * *
+     */
+    public static void main(String[] args) throws Exception {
+<span class="nc" id="L54">        FileOutputStream fout = null;</span>
+
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (args.length &lt; 1) {</span>
+<span class="nc" id="L57">            System.err.println(&quot;Usage: TelnetClientExample1 &lt;remote-ip&gt; [&lt;remote-port&gt;]&quot;);</span>
+<span class="nc" id="L58">            System.exit(1);</span>
+        }
+
+<span class="nc" id="L61">        String remoteip = args[0];</span>
+
+        int remoteport;
+
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        if (args.length &gt; 1) {</span>
+<span class="nc" id="L66">            remoteport = new Integer(args[1]);</span>
+        } else {
+<span class="nc" id="L68">            remoteport = 23;</span>
+        }
+
+        try {
+<span class="nc" id="L72">            fout = new FileOutputStream(&quot;spy.log&quot;, true);</span>
+<span class="nc" id="L73">        } catch (IOException e) {</span>
+<span class="nc" id="L74">            System.err.println(</span>
+                    &quot;Exception while opening the spy file: &quot;
+<span class="nc" id="L76">                            + e.getMessage());</span>
+<span class="nc" id="L77">        }</span>
+
+<span class="nc" id="L79">        tc = new org.apache.commons.net.telnet.TelnetClient();</span>
+
+<span class="nc" id="L81">        TerminalTypeOptionHandler ttopt = new TerminalTypeOptionHandler(&quot;VT100&quot;, false, false, true, false);</span>
+<span class="nc" id="L82">        EchoOptionHandler echoopt = new EchoOptionHandler(true, false, true, false);</span>
+<span class="nc" id="L83">        SuppressGAOptionHandler gaopt = new SuppressGAOptionHandler(true, true, true, true);</span>
+
+        try {
+<span class="nc" id="L86">            tc.addOptionHandler(ttopt);</span>
+<span class="nc" id="L87">            tc.addOptionHandler(echoopt);</span>
+<span class="nc" id="L88">            tc.addOptionHandler(gaopt);</span>
+<span class="nc" id="L89">        } catch (InvalidTelnetOptionException e) {</span>
+<span class="nc" id="L90">            System.err.println(&quot;Error registering option handlers: &quot; + e.getMessage());</span>
+<span class="nc" id="L91">        }</span>
+
+        while (true) {
+<span class="nc" id="L94">            boolean end_loop = false;</span>
+            try {
+<span class="nc" id="L96">                tc.connect(remoteip, remoteport);</span>
+
+
+<span class="nc" id="L99">                Thread reader = new Thread(new TelnetClient());</span>
+<span class="nc" id="L100">                tc.registerNotifHandler(new TelnetClient());</span>
+<span class="nc" id="L101">                System.out.println(&quot;TelnetClientExample&quot;);</span>
+<span class="nc" id="L102">                System.out.println(&quot;Type AYT to send an AYT telnet command&quot;);</span>
+<span class="nc" id="L103">                System.out.println(&quot;Type OPT to print a report of status of options (0-24)&quot;);</span>
+<span class="nc" id="L104">                System.out.println(&quot;Type REGISTER to register a new SimpleOptionHandler&quot;);</span>
+<span class="nc" id="L105">                System.out.println(&quot;Type UNREGISTER to unregister an OptionHandler&quot;);</span>
+<span class="nc" id="L106">                System.out.println(&quot;Type SPY to register the spy (connect to port 3333 to spy)&quot;);</span>
+<span class="nc" id="L107">                System.out.println(&quot;Type UNSPY to stop spying the connection&quot;);</span>
+
+<span class="nc" id="L109">                reader.start();</span>
+<span class="nc" id="L110">                OutputStream outstr = tc.getOutputStream();</span>
+
+<span class="nc" id="L112">                byte[] buff = new byte[1024];</span>
+<span class="nc" id="L113">                int ret_read = 0;</span>
+
+                do {
+                    try {
+<span class="nc" id="L117">                        ret_read = System.in.read(buff);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                        if (ret_read &gt; 0) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                            if ((new String(buff, 0, ret_read)).startsWith(&quot;AYT&quot;)) {</span>
+                                try {
+<span class="nc" id="L121">                                    System.out.println(&quot;Sending AYT&quot;);</span>
+
+<span class="nc" id="L123">                                    System.out.println(&quot;AYT response:&quot; + tc.sendAYT(5000));</span>
+<span class="nc" id="L124">                                } catch (IOException e) {</span>
+<span class="nc" id="L125">                                    System.err.println(&quot;Exception waiting AYT response: &quot; + e.getMessage());</span>
+<span class="nc" id="L126">                                }</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                            } else if ((new String(buff, 0, ret_read)).startsWith(&quot;OPT&quot;)) {</span>
+<span class="nc" id="L128">                                System.out.println(&quot;Status of options:&quot;);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                                for (int ii = 0; ii &lt; 25; ii++) {</span>
+<span class="nc" id="L130">                                    System.out.println(&quot;Local Option &quot; + ii + &quot;:&quot; + tc.getLocalOptionState(ii) + &quot; Remote Option &quot; + ii + &quot;:&quot; + tc.getRemoteOptionState(ii));</span>
+                                }
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                            } else if ((new String(buff, 0, ret_read)).startsWith(&quot;REGISTER&quot;)) {</span>
+<span class="nc" id="L133">                                StringTokenizer st = new StringTokenizer(new String(buff));</span>
+                                try {
+<span class="nc" id="L135">                                    st.nextToken();</span>
+<span class="nc" id="L136">                                    int opcode = Integer.parseInt(st.nextToken());</span>
+<span class="nc" id="L137">                                    boolean initlocal = Boolean.parseBoolean(st.nextToken());</span>
+<span class="nc" id="L138">                                    boolean initremote = Boolean.parseBoolean(st.nextToken());</span>
+<span class="nc" id="L139">                                    boolean acceptlocal = Boolean.parseBoolean(st.nextToken());</span>
+<span class="nc" id="L140">                                    boolean acceptremote = Boolean.parseBoolean(st.nextToken());</span>
+<span class="nc" id="L141">                                    SimpleOptionHandler opthand = new SimpleOptionHandler(opcode, initlocal, initremote,</span>
+                                            acceptlocal, acceptremote);
+<span class="nc" id="L143">                                    tc.addOptionHandler(opthand);</span>
+<span class="nc" id="L144">                                } catch (Exception e) {</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">                                    if (e instanceof InvalidTelnetOptionException) {</span>
+<span class="nc" id="L146">                                        System.err.println(&quot;Error registering option: &quot; + e.getMessage());</span>
+                                    } else {
+<span class="nc" id="L148">                                        System.err.println(&quot;Invalid REGISTER command.&quot;);</span>
+<span class="nc" id="L149">                                        System.err.println(&quot;Use REGISTER optcode initlocal initremote acceptlocal acceptremote&quot;);</span>
+<span class="nc" id="L150">                                        System.err.println(&quot;(optcode is an integer.)&quot;);</span>
+<span class="nc" id="L151">                                        System.err.println(&quot;(initlocal, initremote, acceptlocal, acceptremote are boolean)&quot;);</span>
+                                    }
+<span class="nc" id="L153">                                }</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                            } else if ((new String(buff, 0, ret_read)).startsWith(&quot;UNREGISTER&quot;)) {</span>
+<span class="nc" id="L155">                                StringTokenizer st = new StringTokenizer(new String(buff));</span>
+                                try {
+<span class="nc" id="L157">                                    st.nextToken();</span>
+<span class="nc" id="L158">                                    int opcode = new Integer(st.nextToken());</span>
+<span class="nc" id="L159">                                    tc.deleteOptionHandler(opcode);</span>
+<span class="nc" id="L160">                                } catch (Exception e) {</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                                    if (e instanceof InvalidTelnetOptionException) {</span>
+<span class="nc" id="L162">                                        System.err.println(&quot;Error unregistering option: &quot; + e.getMessage());</span>
+                                    } else {
+<span class="nc" id="L164">                                        System.err.println(&quot;Invalid UNREGISTER command.&quot;);</span>
+<span class="nc" id="L165">                                        System.err.println(&quot;Use UNREGISTER optcode&quot;);</span>
+<span class="nc" id="L166">                                        System.err.println(&quot;(optcode is an integer)&quot;);</span>
+                                    }
+<span class="nc" id="L168">                                }</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                            } else if ((new String(buff, 0, ret_read)).startsWith(&quot;SPY&quot;)) {</span>
+<span class="nc" id="L170">                                tc.registerSpyStream(fout);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                            } else if ((new String(buff, 0, ret_read)).startsWith(&quot;UNSPY&quot;)) {</span>
+<span class="nc" id="L172">                                tc.stopSpyStream();</span>
+                            } else {
+                                try {
+<span class="nc" id="L175">                                    outstr.write(buff, 0, ret_read);</span>
+<span class="nc" id="L176">                                    outstr.flush();</span>
+<span class="nc" id="L177">                                } catch (IOException e) {</span>
+<span class="nc" id="L178">                                    end_loop = true;</span>
+<span class="nc" id="L179">                                }</span>
+                            }
+                        }
+<span class="nc" id="L182">                    } catch (IOException e) {</span>
+<span class="nc" id="L183">                        System.err.println(&quot;Exception while reading keyboard:&quot; + e.getMessage());</span>
+<span class="nc" id="L184">                        end_loop = true;</span>
+<span class="nc" id="L185">                    }</span>
+                }
+<span class="nc bnc" id="L187" title="All 4 branches missed.">                while (ret_read &gt; 0 &amp;&amp; !end_loop);</span>
+
+                try {
+<span class="nc" id="L190">                    tc.disconnect();</span>
+<span class="nc" id="L191">                } catch (IOException e) {</span>
+<span class="nc" id="L192">                    System.err.println(&quot;Exception while connecting:&quot; + e.getMessage());</span>
+<span class="nc" id="L193">                }</span>
+<span class="nc" id="L194">            } catch (IOException e) {</span>
+<span class="nc" id="L195">                System.err.println(&quot;Exception while connecting:&quot; + e.getMessage());</span>
+<span class="nc" id="L196">                System.exit(1);</span>
+<span class="nc" id="L197">            }</span>
+<span class="nc" id="L198">        }</span>
+    }
+
+
+    /**
+     * Callback method called when TelnetClient receives an option
+     * negotiation command.
+     * &lt;p/&gt;
+     *
+     * @param negotiation_code - type of negotiation command received
+     *                         (RECEIVED_DO, RECEIVED_DONT, RECEIVED_WILL, RECEIVED_WONT)
+     *                         &lt;p/&gt;
+     * @param option_code      - code of the option negotiated
+     *                         &lt;p/&gt;
+     *                         *
+     */
+//    @Override
+    public void receivedNegotiation(int negotiation_code, int option_code) {
+<span class="nc" id="L216">        String command = null;</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (negotiation_code == TelnetNotificationHandler.RECEIVED_DO) {</span>
+<span class="nc" id="L218">            command = &quot;DO&quot;;</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        } else if (negotiation_code == TelnetNotificationHandler.RECEIVED_DONT) {</span>
+<span class="nc" id="L220">            command = &quot;DONT&quot;;</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        } else if (negotiation_code == TelnetNotificationHandler.RECEIVED_WILL) {</span>
+<span class="nc" id="L222">            command = &quot;WILL&quot;;</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        } else if (negotiation_code == TelnetNotificationHandler.RECEIVED_WONT) {</span>
+<span class="nc" id="L224">            command = &quot;WONT&quot;;</span>
+        }
+<span class="nc" id="L226">        System.out.println(&quot;Received &quot; + command + &quot; for option code &quot; + option_code);</span>
+<span class="nc" id="L227">    }</span>
+
+    /**
+     * Reader thread.
+     * Reads lines from the TelnetClient and echoes them
+     * on the screen.
+     * *
+     */
+//    @Override
+    public void run() {
+<span class="nc" id="L237">        InputStream instr = tc.getInputStream();</span>
+
+        try {
+<span class="nc" id="L240">            byte[] buff = new byte[1024];</span>
+            int ret_read;
+
+            do {
+<span class="nc" id="L244">                ret_read = instr.read(buff);</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">                if (ret_read &gt; 0) {</span>
+<span class="nc" id="L246">                    System.out.print(new String(buff, 0, ret_read));</span>
+                }
+            }
+<span class="nc bnc" id="L249" title="All 2 branches missed.">            while (ret_read &gt;= 0);</span>
+<span class="nc" id="L250">        } catch (IOException e) {</span>
+<span class="nc" id="L251">            System.err.println(&quot;Exception while reading socket:&quot; + e.getMessage());</span>
+<span class="nc" id="L252">        }</span>
+
+        try {
+<span class="nc" id="L255">            tc.disconnect();</span>
+<span class="nc" id="L256">        } catch (IOException e) {</span>
+<span class="nc" id="L257">            System.err.println(&quot;Exception while closing telnet:&quot; + e.getMessage());</span>
+<span class="nc" id="L258">        }</span>
+<span class="nc" id="L259">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Base.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">content</a> &gt; <span class="el_source">Base.java</span></div><h1>Base.java</h1><pre class="source lang-java linenums">package content;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
+/**
+ * A Base-class to control the property-files.
+ * @author Helmuth Brunner
+ * @version Oct 6, 2014
+ * Current project: RTN
+ */
+public class Base {
+
+	private static Base instance;
+<span class="nc" id="L18">	private String PATH= &quot;/res/&quot;;</span>
+	private Properties settings, lang;
+	
+<span class="nc" id="L21">	private Logger log= Logger.getLogger(Base.class.getName());</span>
+	
+	/**
+	 * Private-constructor
+	 */
+<span class="nc" id="L26">	private Base() {</span>
+		
+<span class="nc" id="L28">		settings= this.loadProperties(&quot;settings&quot;);</span>
+<span class="nc" id="L29">		this.loadSystemLanguage();</span>
+		
+<span class="nc" id="L31">		lang= this.loadProperties(&quot;lang_&quot;+this.getSettingString(&quot;lang&quot;));</span>
+<span class="nc" id="L32">	}</span>
+	
+	/**
+	 * Returns the instance from the Base-Class
+	 * Singleton-Pattern
+	 * @return the instance from this class
+	 */
+	public static Base get() {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">		if(instance==null)</span>
+<span class="nc" id="L41">			instance= new Base();</span>
+<span class="nc" id="L42">		return instance;</span>
+	}
+	
+	/**
+	 * A method to convert the property-files into a Properties-Object
+	 * @param file the property file
+	 * @return the property from the given file
+	 */
+	public Properties loadProperties(String file) {
+<span class="nc" id="L51">		Properties p= new Properties();</span>
+
+<span class="nc" id="L53">		InputStream in= this.getClass().getResourceAsStream(this.PATH+file+&quot;.properties&quot;);</span>
+		
+		try {
+<span class="nc" id="L56">			p.load(in);</span>
+<span class="nc" id="L57">		} catch (IOException e) {</span>
+<span class="nc" id="L58">			log.error(e.getMessage());</span>
+<span class="nc" id="L59">		}</span>
+		
+<span class="nc" id="L61">		return p;</span>
+	}
+	
+	/**
+	 * A method to get the value from the specific key.
+	 * @param the key
+	 * @return the value as String, is the value null the key was not found
+	 */
+	public String getSettingString(String key) { 
+<span class="nc" id="L70">		return settings.getProperty(key);</span>
+	}
+	
+	/**
+	 * A method to get the value from the specific key
+	 * @param the key
+	 * @return the lang-value for the specific key, is the lang-value null the key was not found
+	 */
+	public String getLangString(String key) {
+<span class="nc" id="L79">		return lang.getProperty(key);</span>
+	}
+	
+	/**
+	 * Sets the language to the system-language
+	 */
+	public void loadSystemLanguage() {
+		
+<span class="nc" id="L87">		String l= System.getProperty(&quot;user.language&quot;);</span>
+		
+<span class="nc bnc" id="L89" title="All 2 branches missed.">		if(l.equals(&quot;de&quot;))</span>
+<span class="nc" id="L90">			settings.setProperty(&quot;lang&quot;, &quot;de&quot;);</span>
+		else
+<span class="nc" id="L92">			settings.setProperty(&quot;lang&quot;, &quot;en&quot;);</span>
+		
+<span class="nc" id="L94">	}</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

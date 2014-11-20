@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GetTableCommand.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCo Ant Example</a> &gt; <a href="index.source.html" class="el_package">commands</a> &gt; <span class="el_source">GetTableCommand.java</span></div><h1>GetTableCommand.java</h1><pre class="source lang-java linenums">package commands;
+
+import org.snmp4j.smi.Variable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
+
+/**
+ * This class is responsible for the get table command and based on the command
+ * pattern. This class also implements the interface Command, which contain the
+ * execute function. If the get table command had been called this class will refer
+ * with the function execute to the ActionCommand Class, which will call the actual
+ * function to run the end command.
+ *
+ * @author AHMED ALY
+ */
+public class GetTableCommand implements Command&lt;Vector&lt;Vector&lt;Variable&gt;&gt;&gt; {
+    private ActionCommand actionCommand;
+    private List&lt;String&gt; policys;
+
+    /**
+     * Constructor for the get table command. A parameter have to bee given over. This
+     * parameter have to be a ActionCommand object.
+     *
+     * @param actionCommand object which contain the actual get table command function.
+     * @param policys       List of policys the user want in a table
+     */
+<span class="nc" id="L29">    public GetTableCommand(ActionCommand actionCommand, List&lt;String&gt; policys) {</span>
+<span class="nc" id="L30">        this.actionCommand = actionCommand;</span>
+<span class="nc" id="L31">        this.policys = policys;</span>
+<span class="nc" id="L32">    }</span>
+
+    /**
+     * This function call the get table command function from the object ActionCommand,
+     * which was given over the Constructor.
+     */
+    public Vector&lt;Vector&lt;Variable&gt;&gt; execute() {
+<span class="nc" id="L39">        return actionCommand.getTable(policys);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>
