@@ -4,6 +4,7 @@
 
     <property name="src.dir" value="src"/>
     <property name="doc.dir" value="doc"/>
+    <property name="test.dir" value="test"/>
     <property name="build.dir" value="bin"/>
     <property name="reports.dir" value="reports"/>
     <property name="lib.dir" value="lib"/>
@@ -68,11 +69,11 @@
 
         <mkdir dir="${reports.dir}"/>
         <jacoco:coverage>
-            <junit fork="true" printsummary="yes" haltonfailure="${haltonfailure}">
+            <junit fork="true" printsummary="yes" haltonfailure="no">
                 <classpath refid="project.classpath"/>
                 <formatter type="xml"/>
                 <batchtest fork="yes" todir="${reports.dir}">
-                    <fileset dir="${src.dir}">
+                    <fileset dir="${test.dir}">
                         <include name="**/*Test.java"/>
                     </fileset>
                 </batchtest>
